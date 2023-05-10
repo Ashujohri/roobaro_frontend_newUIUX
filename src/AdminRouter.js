@@ -13,6 +13,8 @@ import AddUser from "./component/Pages/User/AddUser";
 import Visit from "./component/Pages/Visitor/Visit";
 import AddVisitor from "./component/Pages/Visitor/AddVisitor";
 import VisitDetails from "./component/Pages/Visitor/VisitDetails";
+import Minister from './component/Pages/Minister/Minister'
+import AddMinister from './component/Pages/Minister/AddMinister'
 import Profile from "./component/Pages/Profile";
 // import Dashboard360 from "./component/Dashboard/DashboardAdmin";
 
@@ -30,6 +32,8 @@ export default function AdminRouter(props) {
           <Route element={<User />} path="/users" />
           <Route element={<AddUser />} path="/AddUser" />
           <Route element={<UserView />} path="/UserDetailView" />
+          <Route element={<Minister/>} path="/minister" />
+          <Route element={<AddMinister />} path="/AddMinister" />
           <Route element={<Visit />} path="/visitors" />
           <Route element={<AddVisitor />} path="/AddVisitor" />
           <Route element={<VisitDetails />} path="/VisitorDetailView" />

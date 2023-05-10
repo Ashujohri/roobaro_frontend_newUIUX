@@ -9,16 +9,16 @@ import ListItem from "../../Dashboard/ListItem";
 import swal from "sweetalert";
 import moment from "moment";
 
-export default function User(props) {
+export default function Minister(props) {
   const navigate = useNavigate();
   var UserData = JSON.parse(localStorage.getItem("userData"));
-  const [getAllUsers, setAllUsers] = useState([]);
+  const [getAllMinisters, setAllMinisters] = useState([]);
   const [getAllUsersExcelDownload, setAllUsersExcelDownload] = useState([]);
   const [entryStart, setEntryStart] = useState(0);
+  const [Page, setPage] = useState(1);
   const [entryEnd, setEntryEnd] = useState(10);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
-  const [Page, setPage] = useState(1);
-  const [getUserTableData, setUserTableData] = useState([]);
+  const [getMinisterTableData, setMinisterTableData] = useState([]);
   const [getLoading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -27,10 +27,11 @@ export default function User(props) {
 
   const fetchAllUser = async () => {
     try {
-      var res = await getDataAxios(`users/displayUser/${UserData.minister_id}`);
+      var res = await getDataAxios(`minister/displayAllMinister`);
+      
       if (res.status == true) {
-        setAllUsers(res.result);
-        setUserTableData(res.result);
+        setAllMinisters(res.result);
+        setMinisterTableData(res.result);
       } else {
         swal({
           title: `${res.message}`,
@@ -43,124 +44,18 @@ export default function User(props) {
     }
   };
 
-  const handleSearch = async (e) => {
-    var searchArr = [];
-    getUserTableData.map((item) => {
-      var id = `${item.id}`;
-      if (
-        (item.firstname &&
-          item.firstname
-            .toLowerCase()
-            .includes(e.target.value.toLowerCase())) ||
-        (item.lastname &&
-          item.lastname.toLowerCase().includes(e.target.value.toLowerCase())) ||
-          (item.mobile_number &&
-            item.mobile_number.toLowerCase().includes(e.target.value.toLowerCase())) ||
-        (id && id.includes(e.target.value))
-      ) {
-        searchArr.push(item);
-      }
-    });
-    setAllUsers(searchArr);
-  };
-
   const handleViewPage = (item) => {
     navigate("/UserDetailView", { state: { item } });
   };
 
-  const sortTable = (n) => {
-    let table,
-      rows,
-      switching,
-      i,
-      x,
-      y,
-      willSwitch,
-      directory,
-      switchCount = 0;
-    table = document.getElementById("productTable");
-    switching = true;
-    directory = "ascending";
-
-    while (switching) {
-      switching = false;
-      rows = table.rows;
-
-      for (i = 1; i < rows.length - 1; i++) {
-        willSwitch = false;
-
-        x = rows[i].getElementsByTagName("TD")[n];
-        y = rows[i + 1].getElementsByTagName("TD")[n];
-
-        if (directory === "ascending") {
-          if (n === 0) {
-            if (Number(x.innerHTML) > Number(y.innerHTML)) {
-              willSwitch = true;
-              break;
-            }
-          } else if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-            willSwitch = true;
-            break;
-          }
-        } else if (directory === "descending") {
-          if (n === 0) {
-            if (Number(x.innerHTML) < Number(y.innerHTML)) {
-              willSwitch = true;
-              break;
-            }
-          } else if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-            willSwitch = true;
-            break;
-          }
-        }
-      }
-      if (willSwitch) {
-        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-        switching = true;
-
-        switchCount++;
-      } else {
-        if (switchCount === 0 && directory === "ascending") {
-          directory = "descending";
-          switching = true;
-        }
-      }
-    }
-  };
-
-  const showEntry = (value) => {
-    const calcValue =
-      entryStart + value > getAllUsers.length
-        ? getAllUsers.length
-        : entryStart + value;
-    setEntryEnd(calcValue);
-    setEntriesPerPage(value);
-  };
-
-  const handleAddUser = () => {
-    navigate({ pathname: "/AddUser" });
-  };
-
-  const handlePageNumber = (entryNumber, value) => {
-    let entNumber = value - 1;
-
-    setEntryStart(entNumber * entriesPerPage);
-    setEntryEnd(
-      (entNumber + 1) * entriesPerPage < getAllUsers.length
-        ? (entNumber + 1) * entriesPerPage
-        : getAllUsers.length
-    );
-    setPage(value);
-  };
-
   const getEmployee = () => {
     let c = [];
-    if (getAllUsers.length > entriesPerPage) {
+    if (getAllMinisters.length > entriesPerPage) {
       for (let i = entryStart; i < entryEnd; i++) {
         c[i] = showEmployee(i);
       }
     } else {
-      for (let i = 0; i < getAllUsers.length; i++) {
+      for (let i = 0; i < getAllMinisters.length; i++) {
         c[i] = showEmployee(i);
       }
     }
@@ -175,15 +70,17 @@ export default function User(props) {
     let mobileNumber = "";
     let Email = "";
     let createdDate = "";
+    let Status = "";
     try {
-      Id = getAllUsers[i].id;
-      Name = getAllUsers[i].firstname + " " + getAllUsers[i].lastname;
-      ministerName = getAllUsers[i].MinisterName;
-      mobileNumber = getAllUsers[i].mobile_number;
-      Email = getAllUsers[i].email;
-      createdDate = moment(getAllUsers[i].created_at).format(
+      Id = getAllMinisters[i].id;
+      Name = getAllMinisters[i].firstname + " " + getAllMinisters[i].lastname;
+      ministerName = getAllMinisters[i].MinisterName;
+      mobileNumber = getAllMinisters[i].mobile_number;
+      Email = getAllMinisters[i].email;
+      createdDate = moment(getAllMinisters[i].created_at).format(
         "DD/MM/YYYY HH:mm:ss a"
       );
+      Status = getAllMinisters[i].status;
     } catch (error) {
       Id = "";
       ministerName = "";
@@ -191,16 +88,17 @@ export default function User(props) {
       mobileNumber = "";
       Email = "";
       createdDate = "";
+      Status = "";
     }
     return (
       <tr>
         <td>{Id}</td>
         <td> {Name} </td>
-        <td> {ministerName} </td>
         <td> {mobileNumber} </td>
         <td> {Email} </td>
         <td> {createdDate} </td>
-        <td> {createdDate} </td>
+        <td> {Status} </td>
+        
         <td>
           <button
             type="button"
@@ -211,7 +109,7 @@ export default function User(props) {
               alignItems: "center",
             }}
             onClick={() => {
-              handleViewPage(getAllUsers[i]);
+              handleViewPage(getAllMinisters[i]);
             }}
           >
             <i
@@ -224,6 +122,31 @@ export default function User(props) {
     );
   };
 
+  const showEntry = (value) => {
+    setEntryEnd(
+      entryStart + value > getAllMinisters.length
+        ? getAllMinisters.length
+        : entryStart + value
+    );
+    setEntriesPerPage(value);
+  };
+
+  const handleAddUser = () => {
+    navigate({ pathname: "/AddMinister" });
+  };
+
+  const handlePageNumber = (value) => {
+    let entNumber = value - 1;
+
+    setEntryStart(entNumber * entriesPerPage);
+    setEntryEnd(
+      (entNumber + 1) * entriesPerPage < getAllMinisters.length
+        ? (entNumber + 1) * entriesPerPage
+        : getAllMinisters.length
+    );
+    setPage(value);
+  };
+
   const NextFun = () => {
     return <div>Next</div>;
   };
@@ -232,7 +155,7 @@ export default function User(props) {
   }
 
   const handlePaging = () => {
-    let totalPages = getAllUsers.length / entriesPerPage;
+    let totalPages = getAllMinisters.length / entriesPerPage;
     let CheckFloatnumber =
       Number(totalPages) === totalPages && totalPages % 1 !== 0;
 
@@ -252,6 +175,24 @@ export default function User(props) {
         onChange={handlePageNumber}
       />
     );
+  };
+  const handleSearch = async (e) => {
+    var searchArr = [];
+    getMinisterTableData.map((item) => {
+      var id = `${item.id}`;
+      if (
+        (item.firstname &&
+          item.firstname.toLowerCase().includes(e.target.value.toLowerCase())) ||
+        (item.lastname &&
+          item.lastname.toLowerCase().includes(e.target.value.toLowerCase())) ||
+          (item.mobile_number &&
+            item.mobile_number.toLowerCase().includes(e.target.value.toLowerCase())) ||
+        (id && id.includes(e.target.value))
+      ) {
+        searchArr.push(item);
+      }
+    });
+    setAllMinisters(searchArr);
   };
 
   return (
@@ -289,7 +230,7 @@ export default function User(props) {
                           >
                             <div class="col-6 col-md-9 form-label">
                               <div class="grid-cont1ainer">
-                                <h5 class="mt-0">User</h5>
+                                <h5 class="mt-0">Ministers</h5>
                               </div>
                             </div>
                             <div
@@ -315,12 +256,12 @@ export default function User(props) {
 
                                         color: "#fff",
                                         borderRadius: 7,
-                                        width: 115,
+                                        width: 135,
                                         height: 35,
                                       }}
                                       onClick={() => handleAddUser()}
                                     >
-                                      <i class="mdi mdi-plus"></i>Add Users
+                                      <i class="mdi mdi-plus"></i>Add Ministers
                                     </button>
                                     {/* { (isCheck.length > 1 && getAllUsers ) && <button
                                     onClick={() => handleMultipleDelete()}
@@ -481,23 +422,7 @@ export default function User(props) {
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false"
                                       >
-                                        <button
-                                          type="button"
-                                          // class="btn btn-info btn-sm"
-                                          style={{
-                                            borderRadius: 5,
-                                            height: 34,
-                                            background: "#005db6",
-                                            fontSize: 14,
-                                            color: "white",
-                                          }}
-                                        >
-                                          <i
-                                            class="mdi mdi-filter"
-                                            style={{ color: "white" }}
-                                          ></i>{" "}
-                                          Filter
-                                        </button>
+                                        
                                       </a>
                                       <div
                                         className="dropdown-menu dropdown-menu-end"
@@ -589,7 +514,7 @@ export default function User(props) {
                         <div className="table" style={{ fontSize: 11.5 }}>
                           <table
                             id="productTable"
-                            className="table table-hover"
+                            className="table table-hover "
                           >
                             <thead className="table">
                               <tr>
@@ -598,7 +523,7 @@ export default function User(props) {
                                     cursor: "pointer",
                                     padding: "0px 15px 0px 0px",
                                   }}
-                                  onClick={() => sortTable(0)}
+                                  //   onClick={() => sortTable(0)}
                                 >
                                   <div
                                     style={{
@@ -610,32 +535,14 @@ export default function User(props) {
                                     <div style={{ color: "black" }}>ID</div>
                                   </div>
                                 </th>
-                                <th
-                                  style={{
-                                    cursor: "pointer",
-                                    padding: "0px 15px 0px 0px",
-                                  }}
-                                  onClick={() => sortTable(1)}
-                                >
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <div style={{ color: "black" }}>
-                                      User Name
-                                    </div>
-                                  </div>
-                                </th>
+            
                                 <th
                                   style={{
                                     cursor: "pointer",
                                     padding: 0,
                                     //   width: "7%",
                                   }}
-                                  onClick={() => sortTable(2)}
+                                  // onClick={() => sortTable(1)}
                                 >
                                   <div
                                     style={{
@@ -658,7 +565,7 @@ export default function User(props) {
                                     padding: 0,
                                     //   width: "10%",
                                   }}
-                                  onClick={() => sortTable(3)}
+                                  // onClick={() => sortTable(2)}
                                 >
                                   <div
                                     style={{
@@ -678,7 +585,7 @@ export default function User(props) {
                                     padding: 0,
                                     //   width: "10%",
                                   }}
-                                  onClick={() => sortTable(4)}
+                                  // onClick={() => sortTable(3)}
                                 >
                                   <div
                                     style={{
@@ -696,7 +603,7 @@ export default function User(props) {
                                     padding: 0,
                                     //   width: "9%",
                                   }}
-                                  onClick={() => sortTable(5)}
+                                  // onClick={() => sortTable(4)}
                                 >
                                   <div
                                     style={{
@@ -716,7 +623,7 @@ export default function User(props) {
                                     padding: 0,
                                     //   width: "20%",
                                   }}
-                                  onClick={() => sortTable(6)}
+                                  // onClick={() => sortTable(5)}
                                 >
                                   <div
                                     style={{
@@ -726,7 +633,7 @@ export default function User(props) {
                                     }}
                                   >
                                     <div style={{ color: "black" }}>
-                                      Last activity
+                                     status
                                     </div>
                                   </div>
                                 </th>
@@ -737,7 +644,7 @@ export default function User(props) {
                                     padding: 0,
                                     //   width: "10%",
                                   }}
-                                  onClick={() => sortTable(7)}
+                                  // onClick={() => sortTable(7)}
                                 >
                                   <div
                                     style={{
@@ -778,14 +685,14 @@ export default function User(props) {
                       >
                         <div class="col-12 col-md-6">
                           <div style={{ fontSize: 13, fontWeight: 700 }}>
-                            {!getAllUsers.length
+                            {!getAllMinisters.length
                               ? "[Nothing to show]"
                               : "Showing  " +
                                 (entryStart + 1) +
                                 " to " +
                                 entryEnd +
                                 " of " +
-                                getAllUsers.length +
+                                getAllMinisters.length +
                                 " entries"}
                           </div>
                         </div>
