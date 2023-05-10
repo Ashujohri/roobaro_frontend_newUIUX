@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from "react";
-
 import Pagination from "@mui/material/Pagination";
-
 import moment from "moment/moment";
-import AddCustomer from "./AddVisitor";
-import swal from "sweetalert";
 import { CSVLink } from "react-csv";
 import { PaginationItem } from "@mui/material";
-import Divider from "@mui/material";
 import { getDataAxios } from "../../Services/NodeServices";
-import VisitDetails from "./VisitDetails";
 import Topbar from "../../Header/Topbar";
 import ListItem from "../../Dashboard/ListItem";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const excelFormat = [
   "xlsx",
@@ -74,6 +69,26 @@ export default function Visit(props) {
     } else {
       setAllVisits(res.result);
       setVistTableData(res.result);
+    }
+  };
+
+  const handleFilter = async (startDateParam, endDateParam) => {
+    try {
+      let result = await getDataAxios(
+        `visitors/filterDisplayVisitors/${UserData.minister_id}/${startDateParam}/${endDateParam}`
+      );
+      // console.log("result in filter", result);
+      if (result.status === true) {
+        setAllVisits(result.result);
+        setVistTableData(result.result);
+      } else {
+        Swal.fire({
+          icon: "error",
+          text: `${result.message}`,
+        });
+      }
+    } catch (error) {
+      console.log("error in cathc filter", error);
     }
   };
 
@@ -515,7 +530,18 @@ export default function Visit(props) {
                                           <div
                                             href="javascript:void(0);"
                                             className="dropdown-item"
-                                            // onClick={() => handleFilter()}
+                                            onClick={() =>
+                                              handleFilter(
+                                                moment()
+                                                  .startOf("month")
+                                                  .format(
+                                                    "YYYY-MM-DD hh:mm:ss"
+                                                  ),
+                                                moment().format(
+                                                  "YYYY-MM-DD hh:mm:ss"
+                                                )
+                                              )
+                                            }
                                           >
                                             Current month
                                           </div>
@@ -523,7 +549,20 @@ export default function Visit(props) {
                                           <div
                                             href="javascript:void(0);"
                                             className="dropdown-item"
-                                            // onClick={() => handleLastMonthFilter()}
+                                            onClick={() =>
+                                              handleFilter(
+                                                moment()
+                                                  .subtract(1, "months")
+                                                  .startOf("month")
+                                                  .format(
+                                                    "YYYY-MM-DD hh:mm:ss"
+                                                  ),
+                                                moment()
+                                                  .subtract(1, "months")
+                                                  .endOf("month")
+                                                  .format("YYYY-MM-DD hh:mm:ss")
+                                              )
+                                            }
                                           >
                                             Last month
                                           </div>
@@ -531,7 +570,18 @@ export default function Visit(props) {
                                           <div
                                             href="javascript:void(0);"
                                             className="dropdown-item"
-                                            // onClick={() => handleLast3MonthFilter()}
+                                            onClick={() =>
+                                              handleFilter(
+                                                moment()
+                                                  .subtract(3, "months")
+                                                  .format(
+                                                    "YYYY-MM-DD hh:mm:ss"
+                                                  ),
+                                                moment().format(
+                                                  "YYYY-MM-DD hh:mm:ss"
+                                                )
+                                              )
+                                            }
                                           >
                                             Last 3 month
                                           </div>

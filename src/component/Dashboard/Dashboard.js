@@ -317,7 +317,8 @@ export default function Dashboard(props) {
                           }}
                         >
                           <i class="mdi mdi-city-variant-outline" />
-                          VidhanSabha
+                          VidhanSabha &nbsp;
+                          <i class="mdi mdi-arrow-down-drop-circle-outline" />
                         </button>
                       </a>
                       <div
@@ -468,7 +469,8 @@ export default function Dashboard(props) {
                           }}
                         >
                           <i class="mdi mdi-city-variant-outline" />
-                          VidhanSabha
+                          VidhanSabha &nbsp;
+                          <i class="mdi mdi-arrow-down-drop-circle-outline" />
                         </button>
                       </a>
                       <div
