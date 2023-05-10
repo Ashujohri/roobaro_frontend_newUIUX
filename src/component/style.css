@@ -1,0 +1,147 @@
+.custom-dropdown-container {
+  position: relative;
+  /* width: 140px; */
+  
+}
+
+.custom-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  border-radius: 5px; 
+  background-color: #ff7e24;
+  color: #fff;
+ 
+  cursor: pointer;
+  height: 27px;
+  width:80px;
+}
+
+/* .custom-dropdown-header:hover {
+  background-color: #cbd5e0;
+} */
+
+.dropdown-icon {
+  font-size: 10px;
+}
+
+.custom-dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #ff7e24;
+  width: 80px;
+}
+
+.custom-dropdown-option {
+  /* padding: 5px 10px; */
+  color: #fff;
+  cursor: pointer;
+}
+
+.admin-dashboard {
+  display: flex;
+}
+
+.sidebar-header {
+  padding: 20px;
+  background-color: #f0f0f0;
+}
+
+.sidebar-links {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar-links li {
+  margin-bottom: 10px;
+}
+
+.sidebar-links li a {
+  display: block;
+  padding: 10px;
+  background-color: #e0e0e0;
+  color: #333;
+  text-decoration: none;
+}
+
+.sidebar-links li a:hover {
+  background-color: #d0d0d0;
+}
+
+/* .main-content {
+  flex: 1;
+  padding: 20px;
+} */
+
+
+/* .custom-dropdown-option:hover {
+  background-color: #cbd5e0;
+} */
+.custom-button {
+  background-color: #005db6;
+  border: none; 
+  color: white; 
+  padding: 12px 24px; 
+  text-align: center; 
+  text-decoration: none; 
+  display: inline-block; 
+  font-size: 16px; 
+  border-radius: 10px; 
+  cursor: pointer; 
+  width:'5%';
+  height:50px
+}
+
+.custom-button:hover {
+  background-color: #005db6; /* Dark green background on hover */
+}
+
+button {
+  background-color: white;
+  color: black;
+  border: none;
+  padding: 8px 16px;
+  margin-right: 16px;
+  cursor: pointer;
+}
+
+.active-button {
+  background-color: blue;
+  color: white;
+}
+
+.verify-otp-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.otp-input-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.otp-input-container input {
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  text-align: center;
+  margin: 0 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+}
+
+.otp-input-container input:focus {
+  border-color: #0077ff;
+}
+
+
+
