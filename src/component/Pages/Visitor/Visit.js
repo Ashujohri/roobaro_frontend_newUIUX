@@ -96,11 +96,22 @@ export default function Visit(props) {
     setShowVisits(true);
   };
 
+  var excelData=getAllVisits.id
+
   const handleSearch = async (e) => {
     var searchArr = [];
     getVisitTableData.map((item) => {
       var id = `${item.id}`;
-      if (id && id.toLowerCase().includes(e.target.value.toLowerCase())) {
+      if (
+        (item.firstname &&
+          item.firstname
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())) ||
+        (item.lastname &&
+          item.lastname.toLowerCase().includes(e.target.value.toLowerCase())) ||
+          (item.mobile_number &&
+            item.mobile_number.toLowerCase().includes(e.target.value.toLowerCase())) ||
+        (id && id.includes(e.target.value))) {
         searchArr.push(item);
       }
     });
@@ -321,6 +332,47 @@ export default function Visit(props) {
                                 </div>
                               </div>
                               <div
+                          class="col-6 col-md-3"
+                          style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                          }}
+                        >
+                          <div style={{flexDirection:'row'}}>
+                          <div class="grid-cont1ainer">
+                            <div class="row ">
+                              <div
+                                style={{
+                                  display: "flex",
+                                 
+                                  marginRight:70,
+                                 
+                                }}
+                              >
+                                <CSVLink
+                                data={getAllVisits}
+                                filename={"sachin.csv"}>
+                                <button
+                                  type="button"
+                                  style={{
+                                    background: "#f47216",
+
+                                    color: "#fff",
+                                    borderRadius: 5,
+                                    width: 100,
+                                    height: 35,
+                                  }}
+                                  // onClick={() => handleAddUser()}
+                                >
+                                  <i class="fe-download"></i> Export
+
+                                </button>
+                                </CSVLink>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                              <div
                                 class="col-6 col-md-3"
                                 style={{
                                   display: "flex",
@@ -332,18 +384,22 @@ export default function Visit(props) {
                                     <div
                                       style={{
                                         display: "flex",
-                                        justifyContent: "space-between",
+                                        // justifyContent: "space-between",
+                                       
                                       }}
                                     >
                                       <button
                                         type="button"
                                         style={{
-                                          background: "#f47216",
+                                         
 
                                           color: "#fff",
+                                          
                                           borderRadius: 5,
                                           width: 120,
                                           height: 35,
+                                          background:"#f47216",
+                                          
                                         }}
                                         onClick={() => handleAddVisit()}
                                       >
@@ -442,6 +498,7 @@ export default function Visit(props) {
                                   </div>
                                 </div>
                               </div>
+                            </div>
                             </div>
                             <div class="row mt-2">
                               <div class="col-lg-10  form-label">
