@@ -104,6 +104,26 @@ export default function ListItem(props) {
                 </li>
               ) : null}
 
+<li>
+                <a
+                  style={{
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                  onClick={() => handleRoute("minister")}
+                >
+                  {<i className="fe-users" style={{ fontSize: 18 }} />}
+                  <span
+                    style={{
+                      padding: 10,
+                    }}
+                  >
+                   Ministers
+                  </span>
+                </a>
+              </li>
+
               <li>
                 <a
                   style={{

@@ -2,12 +2,12 @@ import axios from "axios";
 import Swal from "sweetalert2";
 var ServerURL = "http://localhost:9292";
 // var ServerURL = "http://campusshala.com:9292";
-
+var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJEZXZpY2VJZCI6Ik90aGVyIDAuMC4wIC8gT3RoZXIgMC4wLjAiLCJDcmVhdGVkVGltZSI6IjE0OjI5OjMyIiwiQ3JlYXRlZERhdGUiOiIyMDIzLTA1LTEwVDA4OjU5OjMyLjcxNloiLCJpYXQiOjE2ODM3MDkxNzIsImV4cCI6MTY4MzcxNjM3Mn0.qxjItwwQgL2QmVIf6a0zA3I9ZkwbxyXzBYPZeEWv_o8"
 const getDataAxios = async (Url) => {
-  let Token = localStorage.getItem("token");
+  let Token = token
   try {
     var url = `${ServerURL}/${Url}`;
-    var config = {
+    var config = { 
       headers: {
         "Content-type": "application/json",
         Authorization: `Bearer ${Token}`,
@@ -41,7 +41,7 @@ const getDataAxios = async (Url) => {
 
 // To Send Data In Node
 const postDataAxios = async (Url, body) => {
-  let Token = localStorage.getItem("token");
+  let Token = token
   try {
     var url = `${ServerURL}/${Url}`;
     var config = {
@@ -75,7 +75,7 @@ const postDataAxios = async (Url, body) => {
 };
 
 const putDataAxios = async (Url, body) => {
-  var Token = localStorage.getItem("token");
+  var Token = token
   try {
     var url = `${ServerURL}/${Url}`;
     const config = {
@@ -108,7 +108,7 @@ const putDataAxios = async (Url, body) => {
 };
 
 const postDataAndImageAxios = async (Url, body) => {
-  let Token = localStorage.getItem("token");
+  let Token = token
   try {
     var url = `${ServerURL}/${Url}`;
     const config = {
@@ -142,7 +142,7 @@ const postDataAndImageAxios = async (Url, body) => {
 };
 
 const putDataAndImageAxios = async (Url, body) => {
-  var Token = localStorage.getItem("token");
+  var Token = token
   try {
     var url = `${ServerURL}/${Url}`;
     const config = {
