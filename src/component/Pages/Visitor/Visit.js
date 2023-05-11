@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import Pagination from "@mui/material/Pagination";
 
-import moment from "moment/moment";
 import AddCustomer from "./AddVisitor";
 import swal from "sweetalert";
 import { CSVLink } from "react-csv";
@@ -13,23 +12,7 @@ import VisitDetails from "./VisitDetails";
 import Topbar from "../../Header/Topbar";
 import ListItem from "../../Dashboard/ListItem";
 import { useNavigate } from "react-router-dom";
-
-const excelFormat = [
-  "xlsx",
-  "xlsm",
-  "xlsb",
-  "xltx",
-  "xltm",
-  "xls",
-  "xlt",
-  "xml",
-  "xlam",
-  "xla",
-  "xlw",
-  "xlr",
-  "csv",
-  "xls",
-];
+import moment from "moment";
 
 export default function Visit(props) {
   let UserData = JSON.parse(localStorage.getItem("userData"));
@@ -43,26 +26,21 @@ export default function Visit(props) {
   const [entryEnd, setEntryEnd] = useState(10);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [getVisitTableData, setVistTableData] = useState([]);
+  const [getVisitExcelData, setVistExcelData] = useState([]);
   const [UploadExcel, setUploadExcel] = useState(false);
   const [getUserExcel, setUserExcel] = useState("");
   const [getLoading, setLoading] = useState(false);
   const [getRefresh, setRefresh] = useState(false);
   const [isCheck, setIsCheck] = useState([]);
-  // alert(JSON.stringify(getAllVisits))
+
+
 
   useEffect(function () {
-    // chkToken();
+  
     fetchAllVisits();
   }, []);
 
-  // const chkToken = async () => {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) {
-  //     navigate("/AdminLogin", { replace: true });
-  //   } else {
-  //     navigate("/visitors", { replace: true });
-  //   }
-  // };
+ 
 
   const fetchAllVisits = async () => {
     var res = await getDataAxios(
@@ -74,14 +52,41 @@ export default function Visit(props) {
     } else {
       setAllVisits(res.result);
       setVistTableData(res.result);
+      let arr = [];
+      res.result.map((item) => {
+        console.log("item", item);
+        delete item.minister_id;
+        delete item.constituency_id;
+        delete item.group_member;
+        delete item.location_type;
+        delete item.physically_disabled;
+        delete item.picture;
+        delete item.updated_at;
+        delete item.refernce;
+        delete item.reason_to_visit;
+        delete item.ConstituencyName;
+        delete item.MantralayName;
+        delete item.date_of_birth;
+        delete item.engage_time;
+        delete item.mantralya_id;
+        delete item.user_id;
+        delete item.vidhansabha_id;
+        delete item.gender;
+        
+       
+        item['created_at']=moment(item.created_at).format("DD/MM/YY HH:MM a");
+      
+
+        arr.push(item);
+      });
+      setVistExcelData(arr);
+   
     }
   };
 
   const handleClick = () => {
     setShowVisits(true);
   };
-
-  var excelData=getAllVisits.id
 
   const handleSearch = async (e) => {
     var searchArr = [];
@@ -94,9 +99,12 @@ export default function Visit(props) {
             .includes(e.target.value.toLowerCase())) ||
         (item.lastname &&
           item.lastname.toLowerCase().includes(e.target.value.toLowerCase())) ||
-          (item.mobile_number &&
-            item.mobile_number.toLowerCase().includes(e.target.value.toLowerCase())) ||
-        (id && id.includes(e.target.value))) {
+        (item.mobile_number &&
+          item.mobile_number
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())) ||
+        (id && id.includes(e.target.value))
+      ) {
         searchArr.push(item);
       }
     });
@@ -202,7 +210,7 @@ export default function Visit(props) {
         <td> {getAllVisits[i].mobile_number} </td>
         <td> {getAllVisits[i].visitor_type} </td>
         <td> {getAllVisits[i].Vidhansabha} </td>
-        <td> {getAllVisits[i].created_at} </td>
+        <td> {moment().format("DD/MM/YY HH:MM a")} </td>
         <td> {getAllVisits[i].UserAddedBy} </td>
         <td
           style={{
@@ -317,173 +325,159 @@ export default function Visit(props) {
                                 </div>
                               </div>
                               <div
-                          class="col-6 col-md-3"
-                          style={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                          }}
-                        >
-                          <div style={{flexDirection:'row'}}>
-                          <div class="grid-cont1ainer">
-                            <div class="row ">
-                              <div
-                                style={{
-                                  display: "flex",
-                                 
-                                  marginRight:70,
-                                 
-                                }}
-                              >
-                                <CSVLink
-                                data={getAllVisits}
-                                filename={"sachin.csv"}>
-                                <button
-                                  type="button"
-                                  style={{
-                                    background: "#f47216",
-
-                                    color: "#fff",
-                                    borderRadius: 5,
-                                    width: 100,
-                                    height: 35,
-                                  }}
-                                  // onClick={() => handleAddUser()}
-                                >
-                                  <i class="fe-download"></i> Export
-
-                                </button>
-                                </CSVLink>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                              <div
                                 class="col-6 col-md-3"
                                 style={{
                                   display: "flex",
                                   justifyContent: "flex-end",
                                 }}
                               >
-                                <div class="grid-cont1ainer">
-                                  <div class="row ">
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        // justifyContent: "space-between",
-                                       
-                                      }}
-                                    >
-                                      <button
-                                        type="button"
+                                <div style={{ flexDirection: "row" }}>
+                                  <div class="grid-cont1ainer">
+                                    <div class="row ">
+                                      <div
                                         style={{
-                                         
+                                          display: "flex",
 
-                                          color: "#fff",
-                                          
-                                          borderRadius: 5,
-                                          width: 120,
-                                          height: 35,
-                                          background:"#f47216",
+                                          marginRight: 70,
+                                        }}
+                                      >
+                                        <CSVLink
+                                          data={getVisitExcelData}
+                                          filename={"vistors.csv"}
+                                        >
+                                          <button
+                                            type="button"
+                                            style={{
+                                              background: "#f47216",
+
+                                              color: "#fff",
+                                              borderRadius: 5,
+                                              width: 100,
+                                              height: 35,
+                                            }}
+                                            onClick={() => showEmployee()}
+                                          >
+                                            <i class="fe-download"></i> Export
+                                          </button>
+                                        </CSVLink>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-6 col-md-3"
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                  }}
+                                >
+                                  <div class="grid-cont1ainer">
+                                    <div class="row ">
+                                      <div
+                                        style={{
+                                          display: "flex",
                                           
                                         }}
-                                        onClick={() => handleAddVisit()}
                                       >
-                                        <i class="mdi mdi-plus"></i>Add Visitor
-                                      </button>
+                                        <button
+                                          type="button"
+                                          style={{
+                                            color: "#fff",
 
-                                      <div
-                                        className="modal fade"
-                                        id="centermodal"
-                                        tabIndex={-1}
-                                        aria-hidden="true"
-                                        style={{ display: "none" }}
-                                      >
-                                        <div className="modal-dialog modal-dialog-centered">
-                                          <div className="modal-content">
-                                            <div className="modal-header">
-                                              <h4
-                                                className="modal-title"
-                                                id="myCenterModalLabel"
-                                              >
-                                                Import Users
-                                              </h4>
+                                            borderRadius: 5,
+                                            width: 120,
+                                            height: 35,
+                                            background: "#f47216",
+                                          }}
+                                          onClick={() => handleAddVisit()}
+                                        >
+                                          <i class="mdi mdi-plus"></i>Add
+                                          Visitor
+                                        </button>
 
-                                              <CSVLink
-                                                data={getAllUsersExcelDownload}
-                                                filename={"User List.csv"}
-                                              >
-                                                <button
-                                                  type="button"
-                                                  className="btn btn-primary btn-xs"
-                                                  data-bs-dismiss="modal"
-                                                  aria-label="Close"
+                                        <div
+                                          className="modal fade"
+                                          id="centermodal"
+                                          tabIndex={-1}
+                                          aria-hidden="true"
+                                          style={{ display: "none" }}
+                                        >
+                                          <div className="modal-dialog modal-dialog-centered">
+                                            <div className="modal-content">
+                                              <div className="modal-header">
+                                                <h4
+                                                  className="modal-title"
+                                                  id="myCenterModalLabel"
                                                 >
-                                                  Download sample file
-                                                </button>
-                                              </CSVLink>
-                                            </div>
+                                                  Import Users
+                                                </h4>
 
-                                            <div className="modal-body">
-                                              <div className="mb-3">
-                                                <input
-                                                  type="file"
-                                                  id="contained-button-filepic"
-                                                  className="form-control"
-                                                  // onChange={(event) =>
-                                                  //   handleExcel(event)
-                                                  // }
-                                                />
+                                                <CSVLink
+                                                  data={
+                                                    getAllUsersExcelDownload
+                                                  }
+                                                  filename={"User List.csv"}
+                                                >
+                                                  <button
+                                                    type="button"
+                                                    className="btn btn-primary btn-xs"
+                                                    data-bs-dismiss="modal"
+                                                    aria-label="Close"
+                                                  >
+                                                    Download sample file
+                                                  </button>
+                                                </CSVLink>
                                               </div>
 
-                                              {UploadExcel ? (
+                                              <div className="modal-body">
+                                                <div className="mb-3">
+                                                  <input
+                                                    type="file"
+                                                    id="contained-button-filepic"
+                                                    className="form-control"
+                                                   
+                                                  />
+                                                </div>
+
+                                                {UploadExcel ? (
+                                                  <button
+                                                    style={{
+                                                      background: "#4261F7",
+                                                      border:
+                                                        "1px solid #4261F7",
+                                                      color: "#fff",
+                                                    }}
+                                                    data-bs-dismiss="modal"
+                                                    aria-label="Close"
+                                                    class="btn btn-primary btn-sm"
+                                                   
+                                                  >
+                                                    Import
+                                                  </button>
+                                                ) : null}
+
                                                 <button
-                                                  style={{
-                                                    background: "#4261F7",
-                                                    border: "1px solid #4261F7",
-                                                    color: "#fff",
-                                                  }}
+                                                  type="button"
+                                                  class="btn btn-info btn-sm"
+                                                  style={{ marginLeft: 12 }}
                                                   data-bs-dismiss="modal"
                                                   aria-label="Close"
-                                                  class="btn btn-primary btn-sm"
-                                                  // onClick={(e) =>
-                                                  //   handleExcelSubmit(e)
-                                                  // }
+                                                  // onClick={() => handleClose()}
                                                 >
-                                                  Import
+                                                  Cancel
                                                 </button>
-                                              ) : null}
-
-                                              <button
-                                                type="button"
-                                                class="btn btn-info btn-sm"
-                                                style={{ marginLeft: 12 }}
-                                                data-bs-dismiss="modal"
-                                                aria-label="Close"
-                                                // onClick={() => handleClose()}
-                                              >
-                                                Cancel
-                                              </button>
+                                              </div>
                                             </div>
                                           </div>
+                                          {/* /.modal-dialog */}
                                         </div>
-                                        {/* /.modal-dialog */}
-                                      </div>
 
-                                      {/* <button
-                                    type="button"
-                                    class="btn btn-info btn-sm"
-                                    style={{ marginLeft: 10, borderRadius: 5 }}
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#centermodal"
-                                  >
-                                    <i class="mdi mdi-download"></i>
-                                    Import
-                                  </button> */}
+                                       
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
                             </div>
                             <div class="row mt-2">
                               <div class="col-lg-10  form-label">

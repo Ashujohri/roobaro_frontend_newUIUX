@@ -20,6 +20,7 @@
     "datatables.net": "^1.12.1",
     "datatables.net-dt": "^1.12.1",
     "date-fns": "^2.29.3",
+    "file-saver": "^2.0.5",
     "izitoast": "^1.4.0",
     "jquery": "^3.6.1",
     "jquery-knob": "^1.2.11",
@@ -53,7 +54,8 @@
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.7.3",
     "victory": "^36.6.8",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",

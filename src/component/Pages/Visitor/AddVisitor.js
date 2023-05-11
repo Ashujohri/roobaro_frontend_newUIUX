@@ -37,6 +37,7 @@ export default function AddVisitor(props) {
   const [getAllMantralaya, setAllMantralaya] = useState([]);
   const [stateId, setStateId] = useState(UserData.StateId);
   const [picture, setPicture] = useState("");
+  const [CreatedAt, setCreatedAt] = useState(moment().format("YYYY-MM-DD HH:mm:ss"));
   const [camstatus, setCamStatus] = useState(false);
   const webcamRef = React.useRef(null);
   const [showModal, setShowModal] = useState(false);
@@ -206,7 +207,7 @@ export default function AddVisitor(props) {
           reason_to_visit: reasonVisit.toString(),
           picture: picture,
           user_id: UserData.id,
-          created_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+          created_at:CreatedAt,
           minister_id: getMinisterId,
           group_member: "Sachin",
           visitor_status: "ongoing",
