@@ -60,6 +60,7 @@ export default function VisitDetails(props) {
   const [getLocationType, setLocationType] = useState(
     visitorData.location_type
   );
+  const [getShowName, setShowName] = useState("Visitor Detail");
 
   // Engade Time//
   const handleClick = () => {
@@ -143,7 +144,7 @@ export default function VisitDetails(props) {
   return (
     <>
       <div id="wrapper">
-        <Topbar />
+        <Topbar showName={getShowName} />
         <ListItem />
         <div class="content-page">
           <div class="container-fluid">
@@ -160,7 +161,8 @@ export default function VisitDetails(props) {
                       }}
                     >
                       <b>Visit Details</b>
-                      {visitorstatus === "Completed" || visitorstatus === "completed"  ? (
+                      {visitorstatus === "Completed" ||
+                      visitorstatus === "completed" ? (
                         <button
                           disabled
                           class="btn btn-sm waves-effect waves-light"

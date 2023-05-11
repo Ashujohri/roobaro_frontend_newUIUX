@@ -46,6 +46,8 @@ export default function AddVisitor(props) {
   const [getLocationType, setLocationType] = useState("");
   const [getMinister, setMinister] = useState([]);
   const [error, setError] = useState(false);
+  const [getShowName, setShowName] = useState("Add Visitor");
+
   const videoConstraints = {
     width: 200,
     height: 200,
@@ -241,7 +243,7 @@ export default function AddVisitor(props) {
   return (
     <>
       <div id="wrapper">
-        <Topbar />
+        <Topbar showName={getShowName} />
         <ListItem />
         <div class="content-page">
           <div class="container-fluid">

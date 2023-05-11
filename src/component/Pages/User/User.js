@@ -20,6 +20,7 @@ export default function User(props) {
   const [Page, setPage] = useState(1);
   const [getUserTableData, setUserTableData] = useState([]);
   const [getLoading, setLoading] = useState(false);
+  const [getShowName, setShowName] = useState("Users");
 
   useEffect(() => {
     fetchAllUser();
@@ -43,6 +44,27 @@ export default function User(props) {
     }
   };
 
+  const handleFilter = async (startDate, endDate) => {
+    try {
+      let result = await getDataAxios(
+        `users/displayFilterUser/${UserData.minister_id}/${startDate}/${endDate}`
+      );
+      // console.log("result in user filter", result);
+      if (result?.status === true) {
+        setAllUsers(result.result);
+        setUserTableData(result.result);
+      } else {
+        swal({
+          title: `${result.message}`,
+          icon: "error",
+          button: "ok",
+        });
+      }
+    } catch (error) {
+      console.log("error in cathc user filter 🔥🔥🔥", error);
+    }
+  };
+
   const handleSearch = async (e) => {
     var searchArr = [];
     getUserTableData.map((item) => {
@@ -54,8 +76,10 @@ export default function User(props) {
             .includes(e.target.value.toLowerCase())) ||
         (item.lastname &&
           item.lastname.toLowerCase().includes(e.target.value.toLowerCase())) ||
-          (item.mobile_number &&
-            item.mobile_number.toLowerCase().includes(e.target.value.toLowerCase())) ||
+        (item.mobile_number &&
+          item.mobile_number
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())) ||
         (id && id.includes(e.target.value))
       ) {
         searchArr.push(item);
@@ -269,7 +293,7 @@ export default function User(props) {
         </div>
       ) : (
         <div id="wrapper">
-          <Topbar />
+          <Topbar showName={getShowName} />
           <ListItem />
           <div className="content-page">
             <div class="card" style={{ borderRadius: 20 }}>
@@ -507,7 +531,16 @@ export default function User(props) {
                                         <div
                                           href="javascript:void(0);"
                                           className="dropdown-item"
-                                          // onClick={() => handleFilter()}
+                                          onClick={() =>
+                                            handleFilter(
+                                              moment()
+                                                .startOf("month")
+                                                .format("YYYY-MM-DD hh:mm:ss"),
+                                              moment().format(
+                                                "YYYY-MM-DD hh:mm:ss"
+                                              )
+                                            )
+                                          }
                                         >
                                           Current month
                                         </div>
@@ -515,7 +548,18 @@ export default function User(props) {
                                         <div
                                           href="javascript:void(0);"
                                           className="dropdown-item"
-                                          // onClick={() => handleLastMonthFilter()}
+                                          onClick={() =>
+                                            handleFilter(
+                                              moment()
+                                                .subtract(1, "months")
+                                                .startOf("month")
+                                                .format("YYYY-MM-DD hh:mm:ss"),
+                                              moment()
+                                                .subtract(1, "months")
+                                                .endOf("month")
+                                                .format("YYYY-MM-DD hh:mm:ss")
+                                            )
+                                          }
                                         >
                                           Last month
                                         </div>
@@ -523,7 +567,16 @@ export default function User(props) {
                                         <div
                                           href="javascript:void(0);"
                                           className="dropdown-item"
-                                          // onClick={() => handleLast3MonthFilter()}
+                                          onClick={() =>
+                                            handleFilter(
+                                              moment()
+                                                .subtract(3, "months")
+                                                .format("YYYY-MM-DD hh:mm:ss"),
+                                              moment().format(
+                                                "YYYY-MM-DD hh:mm:ss"
+                                              )
+                                            )
+                                          }
                                         >
                                           Last 3 month
                                         </div>

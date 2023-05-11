@@ -22,20 +22,26 @@ import {
 } from "victory";
 // Styles sets a 500 max-width on the root container div for the app.
 import "../BarchartCss.css";
+import Swal from "sweetalert2";
+import moment from "moment";
 
 export default function Dashboard(props) {
   const navigate = useNavigate();
   var UserData = JSON.parse(localStorage.getItem("userData"));
   const [getData, setData] = useState([]);
-
-  const data = [
-    { title: "One", value: 20, color: "#ff393a" },
-    { title: "Two", value: 15, color: "#ff7e24" },
-  ];
+  const [getVidhanSabhaSegment, setVidhanSabhaSegment] = useState("");
+  const [getEngageTime, setEngageTime] = useState("");
+  const [getTotalVisitor, setTotalVisitor] = useState("");
+  const [getSingleData, setSingleData] = useState("");
+  const [getGroupData, setGroupData] = useState("");
+  const [getBarChartData, setBarChartData] = useState([]);
+  const [getShowName, setShowName] = useState("Dashboard");
 
   useEffect(() => {
     chkToken();
     fetchVidhanSabhaData();
+    fetchProgressChartsData();
+    fetchBarChartData();
   }, []);
 
   const chkToken = async () => {
@@ -47,6 +53,61 @@ export default function Dashboard(props) {
     }
   };
 
+  // API calling for Bar Chart Graph in Dashboard
+  const fetchBarChartData = async () => {
+    try {
+      let result = await getDataAxios(
+        `admin/dashboardBarChartfilterVisitTimeline/${UserData.minister_id}/undefined/undefined`
+      );
+      if (result?.status === true) {
+        if (result.data.length != 0) {
+          setBarChartData(result.data);
+        } else {
+          setBarChartData(0);
+        }
+      } else {
+        Swal.fire({
+          icon: "error",
+          text: `${result.message}`,
+        });
+      }
+    } catch (error) {
+      console.log("error in catch bar charts 🔥🔥🔥🔥", error);
+    }
+  };
+
+  // API calling for another dashboard KPIs
+  const fetchProgressChartsData = async () => {
+    try {
+      let result = await getDataAxios(
+        `admin/adminDashboardKPI/${UserData.minister_id}`
+      );
+      if (result?.status === true) {
+        if (result.result.length != 0) {
+          setVidhanSabhaSegment(result.result[0].vidhansabhaPercent);
+          setEngageTime(result.result[0].engagementPercent);
+          setTotalVisitor(result.result[0].TotalVisitor);
+          setSingleData(result.single[0].singlePercent);
+          setGroupData(result.group[0].groupPercent);
+        } else {
+          setVidhanSabhaSegment(0);
+          setEngageTime(0);
+          setTotalVisitor(0);
+          setSingleData(0);
+          setGroupData(0);
+        }
+      } else {
+        Swal.fire({
+          icon: "error",
+          text: `${result.message}`,
+        });
+      }
+    } catch (error) {
+      console.log("error in fetch progress charts 🔥🔥🔥", error);
+    }
+  };
+
+  // API calling for dropdown filter in KPIs
   const fetchVidhanSabhaData = async () => {
     try {
       const result = await getDataAxios(
@@ -55,6 +116,29 @@ export default function Dashboard(props) {
       setData(result.result);
     } catch (error) {
       console.log("error in catch", error);
+    }
+  };
+
+  // API calling for Bar charts filter in dashboard
+  const fetchBarChartFilterData = async (startDateParam, endDateParam) => {
+    try {
+      let result = await getDataAxios(
+        `admin/dashboardBarChartfilterVisitTimeline/${UserData.minister_id}/${startDateParam}/${endDateParam}`
+      );
+      if (result?.status === true) {
+        if (result.data.length != 0) {
+          setBarChartData(result.data);
+        } else {
+          setBarChartData(0);
+        }
+      } else {
+        Swal.fire({
+          icon: "error",
+          text: `${result.message}`,
+        });
+      }
+    } catch (error) {
+      console.log("error in catch bar chart filter", error);
     }
   };
 
@@ -73,10 +157,31 @@ export default function Dashboard(props) {
     });
   };
 
+  const convertVidhanFunc = (b) => {
+    if (b == 0) {
+      return "00";
+    } else {
+      return `${b.toFixed(2)}%`;
+    }
+  };
+
+  const convertFuncEngage = (a) => {
+    if (a == 0) {
+      return "00";
+    } else {
+      return `${a.toFixed(2)}%`;
+    }
+  };
+
+  const data = [
+    { title: "Single", value: parseInt(getSingleData), color: "#ff393a" },
+    { title: "Group", value: parseInt(getGroupData), color: "#ff7e24" },
+  ];
+
   return (
     <>
       <div id="wrapper">
-        <Topbar />
+        <Topbar showName={getShowName} />
         <ListItem />
         <div className="content-page">
           {/* BarCharts */}
@@ -143,8 +248,19 @@ export default function Dashboard(props) {
                     <div
                       href="javascript:void(0);"
                       className="dropdown-item"
-                      style={{ color: "black" }}
-                      // onClick={() => handleFilter()}
+                      style={{ color: "black", fontWeight: 650 }}
+                      onClick={() =>
+                        fetchBarChartFilterData(
+                          moment()
+                            .subtract(1, "months")
+                            .startOf("month")
+                            .format("YYYY-MM-DD hh:mm:ss"),
+                          moment()
+                            .subtract(1, "months")
+                            .endOf("month")
+                            .format("YYYY-MM-DD hh:mm:ss")
+                        )
+                      }
                     >
                       1 month
                     </div>
@@ -152,8 +268,15 @@ export default function Dashboard(props) {
                     <div
                       href="javascript:void(0);"
                       className="dropdown-item"
-                      style={{ color: "black" }}
-                      // onClick={() => handleLastMonthFilter()}
+                      style={{ color: "black", fontWeight: 650 }}
+                      onClick={() =>
+                        fetchBarChartFilterData(
+                          moment()
+                            .subtract(3, "months")
+                            .format("YYYY-MM-DD hh:mm:ss"),
+                          moment().format("YYYY-MM-DD hh:mm:ss")
+                        )
+                      }
                     >
                       3 month
                     </div>
@@ -161,8 +284,15 @@ export default function Dashboard(props) {
                     <div
                       href="javascript:void(0);"
                       className="dropdown-item"
-                      style={{ color: "black" }}
-                      // onClick={() => handleLast3MonthFilter()}
+                      style={{ color: "black", fontWeight: 650 }}
+                      onClick={() =>
+                        fetchBarChartFilterData(
+                          moment()
+                            .subtract(6, "months")
+                            .format("YYYY-MM-DD hh:mm:ss"),
+                          moment().format("YYYY-MM-DD hh:mm:ss")
+                        )
+                      }
                     >
                       6 month
                     </div>
@@ -182,47 +312,14 @@ export default function Dashboard(props) {
               domainPadding={20}
               theme={VictoryTheme.material}
             >
-              <VictoryAxis
-                tickValues={[1, 2, 3, 4, 5, 6]}
-                tickFormat={[
-                  "Jan",
-                  "Feb",
-                  "March",
-                  "April",
-                  "May",
-                  "June",
-                  "July",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ]}
-              />
-              <VictoryAxis dependentAxis tickFormat={(x) => `${x / 1000}`} />
               <VictoryBar
                 barRatio={1}
-                // barWidth={({ index }) => index * 3 + 30}
                 cornerRadius={12} // Having this be a non-zero number looks good when it isn't transitioning, but looks like garbage when it is....
                 style={{ data: { fill: "#f47216", width: 40 } }}
                 alignment="middle"
-                // labels={d => d.x}
-                data={[
-                  { Year: "Jan", earning: 4500000 },
-                  { Year: "Feb", earning: 2500000 },
-                  { Year: "March", earning: 5000000 },
-                  { Year: "April", earning: 7500000 },
-                  { Year: "May", earning: 1000000 },
-                  { Year: "June", earning: 1400000 },
-                  { Year: "July", earning: 1700000 },
-                  { Year: "Aug", earning: 1900000 },
-                  { Year: "Sep", earning: 2200000 },
-                  { Year: "Oct", earning: 2400000 },
-                  { Year: "Nov", earning: 2600000 },
-                  { Year: "Dec", earning: 3000000 },
-                ]}
-                x="Year"
-                y="earning"
+                data={getBarChartData}
+                x="x"
+                y="y"
                 labelComponent={<VictoryLabel dy={20} />}
               />
             </VictoryChart>
@@ -267,7 +364,7 @@ export default function Dashboard(props) {
                 }}
               >
                 <CircularProgressbarWithChildren
-                  value={30}
+                  value={getTotalVisitor}
                   strokeWidth={14}
                   styles={buildStyles({
                     pathColor: "#49dc66",
@@ -284,9 +381,11 @@ export default function Dashboard(props) {
                         display: "flex",
                       }}
                     >
-                      50%
+                      {convertVidhanFunc(parseFloat(getVidhanSabhaSegment))}
                     </div>
-                    <div style={{ fontSize: 10 }}>1456 total visitors</div>
+                    <div style={{ fontSize: 10 }}>
+                      {getTotalVisitor} total visitors
+                    </div>
                   </div>
                 </CircularProgressbarWithChildren>
               </div>
@@ -318,7 +417,7 @@ export default function Dashboard(props) {
                         >
                           <i class="mdi mdi-city-variant-outline" />
                           VidhanSabha &nbsp;
-                          <i class="mdi mdi-arrow-down-drop-circle-outline" />
+                          <i class="mdi mdi-arrow-up-drop-circle-outline" />
                         </button>
                       </a>
                       <div
@@ -420,7 +519,7 @@ export default function Dashboard(props) {
                 }}
               >
                 <CircularProgressbarWithChildren
-                  value={70}
+                  value={getTotalVisitor}
                   strokeWidth={14}
                   styles={buildStyles({
                     pathColor: "#2a86df",
@@ -436,9 +535,11 @@ export default function Dashboard(props) {
                         display: "flex",
                       }}
                     >
-                      20%
+                      {convertFuncEngage(parseFloat(getEngageTime))}
                     </div>
-                    <div style={{ fontSize: 10 }}>1456 total visitors</div>
+                    <div style={{ fontSize: 10 }}>
+                      {getTotalVisitor} total visitors
+                    </div>
                   </div>
                 </CircularProgressbarWithChildren>
               </div>
@@ -470,7 +571,7 @@ export default function Dashboard(props) {
                         >
                           <i class="mdi mdi-city-variant-outline" />
                           VidhanSabha &nbsp;
-                          <i class="mdi mdi-arrow-down-drop-circle-outline" />
+                          <i class="mdi mdi-arrow-up-drop-circle-outline" />
                         </button>
                       </a>
                       <div

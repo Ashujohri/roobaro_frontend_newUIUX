@@ -34,6 +34,7 @@ export default function AddUser(props) {
   const [checkvalidate, setcheckvalidate] = useState(false);
   const [validated, setValidated] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [getShowName, setShowName] = useState("Add User");
 
   const handleCompanyPicture = (event) => {
     setPicture({
@@ -168,7 +169,7 @@ export default function AddUser(props) {
   return (
     <>
       <div id="wrapper">
-        <Topbar />
+        <Topbar showName={getShowName} />
         <ListItem />
         <div class="content-page">
           <div class="container-fluid">

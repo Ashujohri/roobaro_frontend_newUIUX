@@ -50,7 +50,7 @@ export default function ListItem(props) {
                       padding: 10,
                     }}
                   >
-                    Dahsboard
+                    Dashboard
                   </span>
                 </a>
               </li>
@@ -104,25 +104,27 @@ export default function ListItem(props) {
                 </li>
               ) : null}
 
-<li>
-                <a
-                  style={{
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                  onClick={() => handleRoute("minister")}
-                >
-                  {<i className="fe-users" style={{ fontSize: 18 }} />}
-                  <span
+              {fetchLocal.includes("super_admin") == true ? (
+                <li>
+                  <a
                     style={{
-                      padding: 10,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
                     }}
+                    onClick={() => handleRoute("minister")}
                   >
-                   Ministers
-                  </span>
-                </a>
-              </li>
+                    {<i className="fe-users" style={{ fontSize: 18 }} />}
+                    <span
+                      style={{
+                        padding: 10,
+                      }}
+                    >
+                      Ministers
+                    </span>
+                  </a>
+                </li>
+              ) : null}
 
               <li>
                 <a

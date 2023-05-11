@@ -31,6 +31,7 @@ export default function UserView(props) {
   const [getSingleType, setSingleType] = useState([]);
   const [showOptions1, setShowOptions1] = useState(false);
   const [showOptions2, setShowOptions2] = useState(false);
+  const [getShowName, setShowName] = useState("User Detail");
   const userDetail = location.state.item;
 
   const options1 = [
@@ -274,7 +275,7 @@ export default function UserView(props) {
 
   return (
     <div id="wrapper">
-      <Topbar />
+      <Topbar showName={getShowName} />
       <ListItem />
       <div class="content-page">
         {/* Profile */}
@@ -402,25 +403,17 @@ export default function UserView(props) {
           </div>
         </div>
         {/* End Profile */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            padding: 0,
-          }}
-        >
+        <div className="row">
           {/* BarCharts */}
-          <div style={{ width: "70%" }}>
-            {/* <BarChart backgroundColor={"red"} /> */}
+          <div className="col-8 col-md-8 form-label">
             <div
               style={{
-                width: props.width,
-                height: props.height,
+                height: "90%",
+                width: "100%",
                 backgroundColor: "white",
                 borderRadius: 20,
                 display: "flex",
-                justifyContent: "center",
+                // justifyContent: "center",
                 flexDirection: "column",
                 margin: 20 /* background:'red' */,
               }}
@@ -444,8 +437,15 @@ export default function UserView(props) {
                 >
                   Visit Timeline
                 </div>
-                <div style={{ paddingRight: 10 }}>
-                  <div style={{ paddingRight: 10 }}>
+                <div
+                  className="col-3 col-md-2"
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    paddingRight: 0,
+                  }}
+                >
+                  <div class="row">
                     <div className="dropdown float-end">
                       <a
                         href={false}
@@ -507,7 +507,7 @@ export default function UserView(props) {
                 </div>
               </div>
               <VictoryChart
-                width={1200}
+                width={1000}
                 responsive={true}
                 animate={{
                   duration: 500,
@@ -518,11 +518,23 @@ export default function UserView(props) {
                 theme={VictoryTheme.material}
               >
                 <VictoryAxis
-                  // tickValues={[1, 2, 3, 4, 5]}
-                  // tickFormat={["A", "B", "C", "D", "E"]}
-                  dependentAxis={true}
+                  tickValues={[1, 2, 3, 4, 5, 6]}
+                  tickFormat={[
+                    "Jan",
+                    "Feb",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "Aug",
+                    "Sep",
+                    "Oct",
+                    "Nov",
+                    "Dec",
+                  ]}
                 />
-                <VictoryAxis />
+                <VictoryAxis dependentAxis tickFormat={(x) => `${x / 1000}`} />
 
                 <VictoryBar
                   barRatio={1}
@@ -531,13 +543,21 @@ export default function UserView(props) {
                   alignment="middle"
                   // labels={d => d.x}
                   data={[
-                    { x: "Year 1", y: 4500000 },
-                    { x: "Year 2", y: 2500000 },
-                    { x: "Year 3", y: 5000000 },
-                    { x: "Year 4", y: 7500000 },
-                    { x: "Year 5", y: 1000000 },
-                    { x: "Year 6", y: 1400000 },
+                    { Year: "Jan", earning: 4500000 },
+                    { Year: "Feb", earning: 2500000 },
+                    { Year: "March", earning: 5000000 },
+                    { Year: "April", earning: 7500000 },
+                    { Year: "May", earning: 1000000 },
+                    { Year: "June", earning: 1400000 },
+                    { Year: "July", earning: 1700000 },
+                    { Year: "Aug", earning: 1900000 },
+                    { Year: "Sep", earning: 2200000 },
+                    { Year: "Oct", earning: 2400000 },
+                    { Year: "Nov", earning: 2600000 },
+                    { Year: "Dec", earning: 3000000 },
                   ]}
+                  x="Year"
+                  y="earning"
                   labelComponent={<VictoryLabel dy={20} />}
                 />
               </VictoryChart>
