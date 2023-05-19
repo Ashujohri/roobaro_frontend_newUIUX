@@ -43,7 +43,9 @@ export default function AddVisitor(props) {
   const [showCam, setShowCam] = useState(true);
   const [otp, setOtp] = useState("");
   const [OTP, setOTP] = useState("");
-  const [getLocationType, setLocationType] = useState("");
+  const [getLocationType, setLocationType] = useState(
+    JSON.parse(localStorage.getItem("location_type"))
+  );
   const [getMinister, setMinister] = useState([]);
   const [error, setError] = useState(false);
   const [getShowName, setShowName] = useState("Add Visitor");
@@ -190,7 +192,7 @@ export default function AddVisitor(props) {
     // alert(otp);
     setOtp(otp);
   };
-
+  
   const handleData = async () => {
     try {
       if (parseInt("9999") === parseInt(OTP)) {

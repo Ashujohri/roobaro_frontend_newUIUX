@@ -428,7 +428,7 @@ export default function AddUser(props) {
                                 Looks good!
                               </Form.Control.Feedback>
                               <Form.Control.Feedback type="invalid">
-                                Enter valid email
+                                Enter password
                               </Form.Control.Feedback>
                             </Form.Group>
                           )}

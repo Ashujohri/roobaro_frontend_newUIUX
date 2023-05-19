@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Topbar from "../Header/Topbar";
 import ListItem from "../Dashboard/ListItem";
+import moment from "moment";
 
 export default function Profile(props) {
-  // const userData = props.item ?? JSON.parse(localStorage.getItem("data"));
+  const userData = props.item ?? JSON.parse(localStorage.getItem("userData"));
 
   return (
     <>
@@ -11,16 +12,10 @@ export default function Profile(props) {
         <Topbar />
         <ListItem />
         <div class="content-page">
-          <div className="card" style={{ borderRadius: 15, width: "100%" }}>
-            <div
-              className="card-body"
-              style={{ borderRadius: 15, padding: 15 }}
-            >
-              <div
-                class="row"
-                style={{ borderRadius: 15, alignItems: "center" }}
-              >
-                <div class="col-10">
+          <div className="card">
+            <div className="card-body">
+              <div class="row">
+                <div class="col-12">
                   <div class="c1ard">
                     <div class="card1-body">
                       <div class="grid-structure">
@@ -31,91 +26,166 @@ export default function Profile(props) {
                           >
                             <div class="grid-cont1ainer">
                               <img
+                                alt="img"
+                                width={"60%"}
                                 src="images/user.png"
-                                style={{
-                                  width: "60%",
-                                  borderRadius: 10,
-                                  marginLeft: 15,
-                                }}
+                                style={{ borderRadius: 20 }}
                               />
                             </div>
                           </div>
                           <div class="col-lg-9">
-                            <div class="row" style={{}}>
-                              <div
-                                class="col-3 col-md-3 form-label"
-                                style={{ width: "25%" }}
-                              >
+                            <div class="row">
+                              <div class="col-6 col-md-3">
                                 <div class="grid-cont1ainer">
-                                  <div class="row" style={{ padding: 5 }}>
+                                  <div class="row">
                                     <label
                                       for="simpleinput"
                                       class="form-label"
-                                      style={{ fontSize: 12, padding: 0 }}
+                                      style={{ fontSize: 12, margin: 0 }}
                                     >
                                       Name
                                     </label>
-                                    {/* {userData.firstname + " " + userData.lastname} */}
-                                    Ashutosh
-                                  </div>
-
-                                  <div class="row" style={{ padding: 5 }}>
                                     <label
                                       for="simpleinput"
                                       class="form-label"
-                                      style={{ fontSize: 12, padding: 0 }}
+                                      style={{ fontSize: 14, color: "#353A40" }}
                                     >
-                                      Added
+                                      {userData.firstname
+                                        ? userData.firstname +
+                                          " " +
+                                          userData.lastname
+                                        : "-"}
                                     </label>
-                                    {/* {userData.created_at} */}
-                                    Sat-May-2023
                                   </div>
                                 </div>
                               </div>
-
-                              <div
-                                class="col-6 col-md-3"
-                                style={{ width: "40%" }}
-                              >
-                                <div class="grid-cont1ainer">
-                                  <div class="row" style={{ padding: 5 }}>
+                              <div class="col-6 col-md-3">
+                                <div class="grid-con1tainer">
+                                  <div class="row">
                                     <label
                                       for="simpleinput"
                                       class="form-label"
-                                      style={{ fontSize: 12, padding: 0 }}
+                                      style={{ fontSize: 12, margin: 0 }}
                                     >
                                       Email
                                     </label>
-                                    {/* {userData.email} */}
-                                    ashutosh@gmail.com
-                                  </div>
-
-                                  <div class="row" style={{ padding: 5 }}>
                                     <label
                                       for="simpleinput"
                                       class="form-label"
-                                      style={{ fontSize: 12, padding: 0 }}
+                                      style={{ fontSize: 14, color: "#353A40" }}
                                     >
-                                      Status
+                                      {userData.email ? userData.email : "-"}
                                     </label>
-                                    {/* {userData.status} */}
-                                    Active
                                   </div>
                                 </div>
                               </div>
-
                               <div class="col-6 col-md-3">
-                                <div class="grid-cont1ainer">
-                                  <div class="row" style={{ padding: 5 }}>
+                                <div class="grid-con1tainer">
+                                  <div class="row">
                                     <label
                                       for="simpleinput"
                                       class="form-label"
-                                      style={{ fontSize: 12, padding: 0 }}
+                                      style={{ fontSize: 12, margin: 0 }}
                                     >
-                                      Phone Number
+                                      Mobile
                                     </label>
-                                    {/* {userData.mobile_number} */}
-                                    8889870969
+                                    <label
+                                      for="simpleinput"
+                                      class="form-label"
+                                      style={{ fontSize: 14, color: "#353A40" }}
+                                    >
+                                      {userData.mobile_number
+                                        ? userData.mobile_number
+                                        : "-"}
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-6 col-md-3">
+                                <div class="grid-con1tainer">
+                                  <div class="row">
+                                    <label
+                                      for="simpleinput"
+                                      class="form-label"
+                                      style={{ fontSize: 12, margin: 0 }}
+                                    >
+                                      Added
+                                    </label>
+                                    <label
+                                      for="simpleinput"
+                                      class="form-label"
+                                      style={{ fontSize: 14, color: "#353A40" }}
+                                    >
+                                      {userData.created_at
+                                        ? moment(userData.created_at).format(
+                                            "DD/MM/YYYY"
+                                          )
+                                        : "-"}
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-6 col-md-3">
+                                <div class="grid-con1tainer">
+                                  <div class="row">
+                                    <label
+                                      for="simpleinput"
+                                      class="form-label"
+                                      style={{ fontSize: 12, margin: 0 }}
+                                    >
+                                      Status
+                                    </label>
+                                    <label
+                                      for="simpleinput"
+                                      class="form-label"
+                                      style={{ fontSize: 14, color: "#353A40" }}
+                                    >
+                                      {userData.status ? userData.status : "-"}
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-6 col-md-3">
+                                <div class="grid-con1tainer">
+                                  <div class="row">
+                                    <label
+                                      for="simpleinput"
+                                      class="form-label"
+                                      style={{ fontSize: 12, margin: 0 }}
+                                    >
+                                      Address
+                                    </label>
+                                    <label
+                                      for="simpleinput"
+                                      class="form-label"
+                                      style={{ fontSize: 14, color: "#353A40" }}
+                                    >
+                                      {userData.user_address
+                                        ? userData.user_address
+                                        : "-"}
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-6 col-md-3">
+                                <div class="grid-con1tainer">
+                                  <div class="row">
+                                    <label
+                                      for="simpleinput"
+                                      class="form-label"
+                                      style={{ fontSize: 12, margin: 0 }}
+                                    >
+                                      Organization
+                                    </label>
+                                    <label
+                                      for="simpleinput"
+                                      class="form-label"
+                                      style={{ fontSize: 14, color: "#353A40" }}
+                                    >
+                                      {userData.user_organization
+                                        ? userData.user_organization
+                                        : "-"}
+                                    </label>
                                   </div>
                                 </div>
                               </div>

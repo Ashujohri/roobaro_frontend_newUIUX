@@ -28,7 +28,7 @@ const excelFormat = [
 
 export default function Visit(props) {
   let UserData = JSON.parse(localStorage.getItem("userData"));
-  // console.table("USERdatasssssss", UserData);
+  var fetchLocal = JSON.parse(localStorage.getItem("roleName"));
   const navigate = useNavigate();
   const [getAllVisits, setAllVisits] = useState([]);
   const [getAllUsersExcelDownload, setAllUsersExcelDownload] = useState([]);
@@ -41,8 +41,6 @@ export default function Visit(props) {
   const [getUserExcel, setUserExcel] = useState("");
   const [getLoading, setLoading] = useState(false);
   const [getShowName, setShowName] = useState("Visitors");
-
-  // alert(JSON.stringify(getAllVisits))
 
   useEffect(function () {
     // chkToken();
@@ -59,15 +57,22 @@ export default function Visit(props) {
   // };
 
   const fetchAllVisits = async () => {
-    var res = await getDataAxios(
-      `visitors/displayVisitors/${UserData.minister_id}`
-    );
-    if (props?.timeLineData) {
-      setAllVisits(props?.timeLineData);
-      setVistTableData(props?.timeLineData);
-    } else {
-      setAllVisits(res.result);
-      setVistTableData(res.result);
+    try {
+      var res = await getDataAxios(
+        `visitors/displayVisitors/${UserData.minister_id}`
+      );
+      if (res.status === true) {
+        setAllVisits(res.result);
+        setVistTableData(res.result);
+        setAllUsersExcelDownload(res.ExcelData);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: `${res.message}`,
+        });
+      }
+    } catch (error) {
+      console.log("error in catch visitor", error);
     }
   };
 
@@ -80,6 +85,7 @@ export default function Visit(props) {
       if (result?.status === true) {
         setAllVisits(result.result);
         setVistTableData(result.result);
+        setAllUsersExcelDownload(result.ExcelData);
       } else {
         Swal.fire({
           icon: "error",
@@ -206,27 +212,56 @@ export default function Visit(props) {
   };
 
   const showEmployee = (i) => {
+    let ID = "";
+    let Name = "";
+    let mobileNumber = "";
+    let visitorType = "";
+    let VidhanSabhaName = "";
+    let CreatedDate = "";
+    let UserAddedBy = "";
+    let VisitorStatus = "";
+    try {
+      ID = getAllVisits[i].id;
+      Name = getAllVisits[i].firstname + " " + getAllVisits[i].lastname;
+      mobileNumber = getAllVisits[i].mobile_number;
+      visitorType = getAllVisits[i].visitor_type;
+      VidhanSabhaName = getAllVisits[i].Vidhansabha;
+      CreatedDate = moment(getAllVisits[i].created_at).format(
+        "DD/MM/YYYY HH:mm:ss a"
+      );
+      UserAddedBy = getAllVisits[i].UserAddedBy;
+      VisitorStatus = getAllVisits[i].visitor_status;
+    } catch (error) {
+      ID = "";
+      Name = "";
+      mobileNumber = "";
+      visitorType = "";
+      VidhanSabhaName = "";
+      CreatedDate = "";
+      UserAddedBy = "";
+      VisitorStatus = "";
+    }
     return (
       <tr>
-        <td> {getAllVisits[i].id} </td>
-        <td> {getAllVisits[i].firstname + " " + getAllVisits[i].lastname} </td>
-        <td> {getAllVisits[i].mobile_number} </td>
-        <td> {getAllVisits[i].visitor_type} </td>
-        <td> {getAllVisits[i].Vidhansabha} </td>
-        <td> {getAllVisits[i].created_at} </td>
-        <td> {getAllVisits[i].UserAddedBy} </td>
+        <td> {ID} </td>
+        <td> {Name} </td>
+        <td> {mobileNumber} </td>
+        <td> {visitorType} </td>
+        <td> {VidhanSabhaName} </td>
+        <td> {CreatedDate} </td>
+        <td> {UserAddedBy} </td>
         <td
           style={{
-            color:
-              getAllVisits[i].visitor_status == "ongoing" ? "green" : "red",
+            color: VisitorStatus == "ongoing" ? "green" : "red",
           }}
         >
           {" "}
-          {getAllVisits[i].visitor_status}{" "}
+          {VisitorStatus}{" "}
         </td>
         <td>
           <button
             type="button"
+            class="btn btn-primary btn-sm"
             style={{
               borderRadius: 25,
               backgroundColor: "#23aed2",
@@ -235,7 +270,7 @@ export default function Visit(props) {
             }}
             onClick={() => handleViewPage(getAllVisits[i])}
           >
-            <i className="fe-eye" style={{ color: "white" }} />
+            <i className="fe-eye" />
           </button>
         </td>
       </tr>
@@ -358,23 +393,26 @@ export default function Visit(props) {
                                           Visitor
                                         </button>
 
-                                        <CSVLink
-                                          data={getAllVisits}
-                                          filename={"Visitors.csv"}
-                                        >
-                                          <button
-                                            type="button"
-                                            className="btn width-sm"
-                                            style={{
-                                              background: "#f47216",
-                                              color: "#fff",
-                                              borderRadius: 5,
-                                              marginLeft: 5,
-                                            }}
+                                        {fetchLocal.includes("user_staff") ==
+                                        true ? null : (
+                                          <CSVLink
+                                            data={getAllUsersExcelDownload}
+                                            filename={"Visitors.csv"}
                                           >
-                                            <i class="fe-download"></i> Export
-                                          </button>
-                                        </CSVLink>
+                                            <button
+                                              type="button"
+                                              className="btn width-sm"
+                                              style={{
+                                                background: "#f47216",
+                                                color: "#fff",
+                                                borderRadius: 5,
+                                                marginLeft: 5,
+                                              }}
+                                            >
+                                              <i class="fe-download"></i> Export
+                                            </button>
+                                          </CSVLink>
+                                        )}
                                       </div>
                                     </div>
                                   </div>
@@ -444,10 +482,10 @@ export default function Visit(props) {
                                           aria-expanded="false"
                                         >
                                           <button
+                                            className="btn btn-sm"
                                             type="button"
                                             style={{
-                                              borderRadius: 5,
-                                              height: 34,
+                                              // borderRadius: 15,
                                               background: "#005db6",
                                               fontSize: 14,
                                               color: "white",

@@ -228,6 +228,7 @@ export default function User(props) {
         <td>
           <button
             type="button"
+            class="btn btn-primary btn-sm"
             style={{
               borderRadius: 25,
               backgroundColor: "#23aed2",
@@ -238,10 +239,7 @@ export default function User(props) {
               handleViewPage(getAllUsers[i]);
             }}
           >
-            <i
-              className="fe-eye"
-              style={{ backgroundColor: "#22a6b3", color: "white" }}
-            />
+            <i className="fe-eye" />
           </button>
         </td>
       </tr>
@@ -332,35 +330,18 @@ export default function User(props) {
                                     }}
                                   >
                                     <button
-                                      type="button"
-                                      // class="btn btn-primary btn-sm"
+                                      className="btn width-sm"
                                       style={{
-                                        background: "#ff7e24",
-
                                         color: "#fff",
-                                        borderRadius: 7,
-                                        width: 115,
-                                        height: 35,
+                                        borderRadius: 5,
+                                        background: "#f47216",
+                                        padding: ".28rem .5rem",
+                                        marginRight: 5,
                                       }}
                                       onClick={() => handleAddUser()}
                                     >
                                       <i class="mdi mdi-plus"></i>Add Users
                                     </button>
-                                    {/* { (isCheck.length > 1 && getAllUsers ) && <button
-                                    onClick={() => handleMultipleDelete()}
-                                    // { isCheck.length > 0 && disabled}
-                                    
-                                    type="button"
-                                    class="btn btn-info btn-sm"
-                                    style={{
-                                      borderRadius: 5,
-                                      height: 34,
-                                      marginLeft: 10,
-                                      width:120
-                                    }}
-                                  >
-                                    <i class="mdi mdi-delete"></i> Delete
-                                  </button>} */}
 
                                     <div
                                       className="modal fade"
@@ -393,50 +374,6 @@ export default function User(props) {
                                               </button>
                                             </CSVLink>
                                           </div>
-
-                                          {/* <div className="modal-body">
-                                          <div className="mb-3">
-                                            <input
-                                              type="file"
-                                              id="contained-button-filepic"
-                                              className="form-control"
-                                              // onChange={(event) =>
-                                              //   handleExcel(event)
-                                              // }
-                                            />
-                                          </div>
-
-                                          {UploadExcel ? (
-                                            <button
-                                              style={{
-                                                background: "#4261F7",
-                                                border: "1px solid #4261F7",
-                                               color:'#fff'
-                                               
-                                                
-                                              }}
-                                              data-bs-dismiss="modal"
-                                              aria-label="Close"
-                                              class="btn btn-primary btn-sm"
-                                              // onClick={(e) =>
-                                              //   handleExcelSubmit(e)
-                                              // }
-                                            >
-                                              Import
-                                            </button>
-                                          ) : null}
-
-                                          <button
-                                            type="button"
-                                            class="btn btn-info btn-sm"
-                                            style={{ marginLeft: 12 }}
-                                            data-bs-dismiss="modal"
-                                            aria-label="Close"
-                                            // onClick={() => handleClose()}
-                                          >
-                                            Cancel
-                                          </button>
-                                        </div> */}
                                         </div>
                                       </div>
                                       {/* /.modal-dialog */}
@@ -506,11 +443,10 @@ export default function User(props) {
                                         aria-expanded="false"
                                       >
                                         <button
+                                          className="btn btn-sm"
                                           type="button"
-                                          // class="btn btn-info btn-sm"
                                           style={{
-                                            borderRadius: 5,
-                                            height: 34,
+                                            // borderRadius: 15,
                                             background: "#005db6",
                                             fontSize: 14,
                                             color: "white",

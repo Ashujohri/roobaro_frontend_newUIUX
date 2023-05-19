@@ -4,7 +4,6 @@ import ListItem from "../../Dashboard/ListItem";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Pagination, PaginationItem } from "@mui/material";
 import { PieChart } from "react-minimal-pie-chart";
-import Dropdown from "../../Dropdown/dropdown";
 import {
   VictoryBar,
   VictoryChart,
@@ -16,6 +15,8 @@ import "../../BarchartCss.css";
 import moment from "moment";
 import { ServerURL, getDataAxios } from "../../Services/NodeServices";
 import swal from "sweetalert";
+import Swal from "sweetalert2";
+import { CSVLink } from "react-csv";
 
 export default function UserView(props) {
   const navigate = useNavigate();
@@ -29,20 +30,14 @@ export default function UserView(props) {
   const [getVisitTableData, setVistTableData] = useState([]);
   const [getGroupType, setGroupType] = useState([]);
   const [getSingleType, setSingleType] = useState([]);
-  const [showOptions1, setShowOptions1] = useState(false);
-  const [showOptions2, setShowOptions2] = useState(false);
   const [getShowName, setShowName] = useState("User Detail");
+  const [getBarChartData, setBarChartData] = useState([]);
   const userDetail = location.state.item;
-
-  const options1 = [
-    { label: "1 months", id: 1 },
-    { label: "3 months", id: 2 },
-    { label: "6 months", id: 3 },
-  ];
 
   useEffect(() => {
     // chkToken();
     fetchData();
+    fetchBarChartData();
   }, []);
 
   // const chkToken = async () => {
@@ -53,6 +48,31 @@ export default function UserView(props) {
   //     navigate("/users", { replace: true });
   //   }
   // };
+
+  const fetchBarChartData = async (startDate, endDate) => {
+    try {
+      let result = await getDataAxios(
+        `users/userDetailViewBarChart/${userDetail.id}/${
+          startDate == "" ? "undefined" : startDate
+        }/${endDate == "" ? "undefined" : endDate}`
+      );
+      if (result?.status === true) {
+        if (result.data.length != 0) {
+          setBarChartData(result.data);
+        } else {
+          setBarChartData(0);
+        }
+      } else {
+        Swal.fire({
+          icon: "error",
+          text: `${result.message}`,
+        });
+      }
+    } catch (error) {
+      console.log("error in catch BarChart Data", error);
+    }
+  };
+
   const fetchData = async () => {
     try {
       let result = await getDataAxios(
@@ -60,8 +80,10 @@ export default function UserView(props) {
       );
       if (result.status == true) {
         setAllVisits(result.timeLineData);
+        setVistTableData(result.timeLineData);
         setGroupType(result.groupTypeData[0].groupPercent);
         setSingleType(result.singleTypeData[0].singlePercent);
+        setAllUsersExcelDownload(result.ExcelData);
       } else {
         swal({
           title: `${result.message}`,
@@ -74,11 +96,64 @@ export default function UserView(props) {
     }
   };
 
+  const handleFilterVisitType = async (startDate, endDate) => {
+    try {
+      let result = await getDataAxios(
+        `visitors/userDetailVisitTypeFilter/${userDetail.id}/${startDate}/${endDate}`
+      );
+      if (result.status == true) {
+        setGroupType(result.groupTypeData[0].groupPercent);
+        setSingleType(result.singleTypeData[0].singlePercent);
+      } else {
+        swal({
+          title: `${result.message}`,
+          icon: "error",
+          button: "ok",
+        });
+      }
+    } catch (error) {
+      console.log("error in catch visitType filter", error);
+    }
+  };
+
+  const handleUserDetailVisitrFilter = async (startDate, endDate) => {
+    try {
+      let result = await getDataAxios(
+        `visitors/userDetailVisitorFilter/${userDetail.id}/${startDate}/${endDate}`
+      );
+      if (result.status == true) {
+        setAllVisits(result.timeLineData);
+        setVistTableData(result.timeLineData);
+        setAllUsersExcelDownload(result.ExcelData);
+      } else {
+        swal({
+          title: `${result.message}`,
+          icon: "error",
+          button: "ok",
+        });
+      }
+    } catch (error) {
+      console.log("error in catch visitor filter", error);
+    }
+  };
+
   const handleSearch = async (e) => {
     var searchArr = [];
     getVisitTableData.map((item) => {
       var id = `${item.id}`;
-      if (id && id.includes(e.target.value)) {
+      if (
+        (id && id.includes(e.target.value)) ||
+        (item.firstname &&
+          item.firstname
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())) ||
+        (item.mobile_number &&
+          item.mobile_number
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())) ||
+        (item.lastname &&
+          item.lastname.toLowerCase().includes(e.target.value.toLowerCase()))
+      ) {
         searchArr.push(item);
       }
     });
@@ -168,7 +243,9 @@ export default function UserView(props) {
     return c;
   };
 
-  const handleViewPage = (item) => {};
+  const handleViewPage = (item) => {
+    console.log("item of visitor", item);
+  };
 
   const showEmployee = (i) => {
     let ID = "";
@@ -209,6 +286,7 @@ export default function UserView(props) {
         <td>
           <button
             type="button"
+            class="btn btn-primary btn-sm"
             style={{
               borderRadius: 25,
               backgroundColor: "#23aed2",
@@ -408,12 +486,11 @@ export default function UserView(props) {
           <div className="col-8 col-md-8 form-label">
             <div
               style={{
-                height: "90%",
                 width: "100%",
+                height: "90%",
                 backgroundColor: "white",
-                borderRadius: 20,
+                borderRadius: 15,
                 display: "flex",
-                // justifyContent: "center",
                 flexDirection: "column",
                 margin: 20 /* background:'red' */,
               }}
@@ -432,82 +509,99 @@ export default function UserView(props) {
                     paddingLeft: 10,
                     fontFamily: "Poppins",
                     color: "black",
-                    fontWeight: 800,
+                    fontWeight: "bold",
                   }}
                 >
-                  Visit Timeline
+                  Visitors trend
                 </div>
-                <div
-                  className="col-3 col-md-2"
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    paddingRight: 0,
-                  }}
-                >
-                  <div class="row">
-                    <div className="dropdown float-end">
-                      <a
-                        href={false}
-                        className="dropdown-toggle arrow-none card-drop"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        <button
-                          type="button"
-                          class="btn btn-info btn-sm"
-                          style={{
-                            borderRadius: 12,
-                            height: 28,
-                            backgroundColor: "#005db6",
-                          }}
-                        >
-                          <i class="mdi mdi-filter"></i> Filter
-                        </button>
-                      </a>
-                      <div
-                        className="dropdown-menu dropdown-menu-end"
+                <div style={{ paddingRight: 10 }}>
+                  <div className="dropdown float-end">
+                    <a
+                      href={false}
+                      className="dropdown-toggle arrow-none card-drop"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <button
+                        type="button"
+                        class="btn btn-info btn-sm"
                         style={{
-                          cursor: "pointer",
+                          borderRadius: 12,
+                          height: 28,
                           backgroundColor: "#005db6",
-                          color: "white",
-                          borderRadius: 18,
                         }}
                       >
-                        {/* item*/}
-                        <div
-                          href="javascript:void(0);"
-                          className="dropdown-item"
-                          style={{ color: "black" }}
-                          // onClick={() => handleFilter()}
-                        >
-                          1 month
-                        </div>
-                        {/* item*/}
-                        <div
-                          href="javascript:void(0);"
-                          className="dropdown-item"
-                          style={{ color: "black" }}
-                          // onClick={() => handleLastMonthFilter()}
-                        >
-                          3 month
-                        </div>
-                        {/* item*/}
-                        <div
-                          href="javascript:void(0);"
-                          className="dropdown-item"
-                          style={{ color: "black" }}
-                          // onClick={() => handleLast3MonthFilter()}
-                        >
-                          6 month
-                        </div>
+                        <i class="mdi mdi-filter"></i> Filter
+                      </button>
+                    </a>
+                    <div
+                      className="dropdown-menu dropdown-menu-end"
+                      style={{
+                        cursor: "pointer",
+                        backgroundColor: "#005db6",
+                        color: "white",
+                        borderRadius: 18,
+                      }}
+                    >
+                      {/* item*/}
+                      <div
+                        href="javascript:void(0);"
+                        className="dropdown-item"
+                        style={{ color: "black", fontWeight: 650 }}
+                        onClick={() =>
+                          fetchBarChartData(
+                            moment()
+                              .subtract(1, "months")
+                              .startOf("month")
+                              .format("YYYY-MM-DD hh:mm:ss"),
+                            moment()
+                              .subtract(1, "months")
+                              .endOf("month")
+                              .format("YYYY-MM-DD hh:mm:ss")
+                          )
+                        }
+                      >
+                        1 month
+                      </div>
+                      {/* item*/}
+                      <div
+                        href="javascript:void(0);"
+                        className="dropdown-item"
+                        style={{ color: "black", fontWeight: 650 }}
+                        onClick={() =>
+                          fetchBarChartData(
+                            moment()
+                              .subtract(3, "months")
+                              .format("YYYY-MM-DD hh:mm:ss"),
+                            moment().format("YYYY-MM-DD hh:mm:ss")
+                          )
+                        }
+                      >
+                        3 month
+                      </div>
+                      {/* item*/}
+                      <div
+                        href="javascript:void(0);"
+                        className="dropdown-item"
+                        style={{ color: "black", fontWeight: 650 }}
+                        onClick={() =>
+                          fetchBarChartData(
+                            moment()
+                              .subtract(6, "months")
+                              .format("YYYY-MM-DD hh:mm:ss"),
+                            moment().format("YYYY-MM-DD hh:mm:ss")
+                          )
+                        }
+                      >
+                        6 month
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
               <VictoryChart
-                width={1000}
+                width={1200}
+                padding={65}
                 responsive={true}
                 animate={{
                   duration: 500,
@@ -517,47 +611,14 @@ export default function UserView(props) {
                 domainPadding={20}
                 theme={VictoryTheme.material}
               >
-                <VictoryAxis
-                  tickValues={[1, 2, 3, 4, 5, 6]}
-                  tickFormat={[
-                    "Jan",
-                    "Feb",
-                    "March",
-                    "April",
-                    "May",
-                    "June",
-                    "July",
-                    "Aug",
-                    "Sep",
-                    "Oct",
-                    "Nov",
-                    "Dec",
-                  ]}
-                />
-                <VictoryAxis dependentAxis tickFormat={(x) => `${x / 1000}`} />
-
                 <VictoryBar
                   barRatio={1}
-                  cornerRadius={15} // Having this be a non-zero number looks good when it isn't transitioning, but looks like garbage when it is....
+                  cornerRadius={12} // Having this be a non-zero number looks good when it isn't transitioning, but looks like garbage when it is....
                   style={{ data: { fill: "#f47216", width: 40 } }}
                   alignment="middle"
-                  // labels={d => d.x}
-                  data={[
-                    { Year: "Jan", earning: 4500000 },
-                    { Year: "Feb", earning: 2500000 },
-                    { Year: "March", earning: 5000000 },
-                    { Year: "April", earning: 7500000 },
-                    { Year: "May", earning: 1000000 },
-                    { Year: "June", earning: 1400000 },
-                    { Year: "July", earning: 1700000 },
-                    { Year: "Aug", earning: 1900000 },
-                    { Year: "Sep", earning: 2200000 },
-                    { Year: "Oct", earning: 2400000 },
-                    { Year: "Nov", earning: 2600000 },
-                    { Year: "Dec", earning: 3000000 },
-                  ]}
-                  x="Year"
-                  y="earning"
+                  data={getBarChartData}
+                  x="x"
+                  y="y"
                   labelComponent={<VictoryLabel dy={20} />}
                 />
               </VictoryChart>
@@ -629,8 +690,19 @@ export default function UserView(props) {
                       <div
                         href="javascript:void(0);"
                         className="dropdown-item"
-                        style={{ color: "black" }}
-                        // onClick={() => handleFilter()}
+                        style={{ color: "black", fontWeight: 650 }}
+                        onClick={() =>
+                          handleFilterVisitType(
+                            moment()
+                              .subtract(1, "months")
+                              .startOf("month")
+                              .format("YYYY-MM-DD hh:mm:ss"),
+                            moment()
+                              .subtract(1, "months")
+                              .endOf("month")
+                              .format("YYYY-MM-DD hh:mm:ss")
+                          )
+                        }
                       >
                         1 month
                       </div>
@@ -638,8 +710,15 @@ export default function UserView(props) {
                       <div
                         href="javascript:void(0);"
                         className="dropdown-item"
-                        style={{ color: "black" }}
-                        // onClick={() => handleLastMonthFilter()}
+                        style={{ color: "black", fontWeight: 650 }}
+                        onClick={() =>
+                          handleFilterVisitType(
+                            moment()
+                              .subtract(3, "months")
+                              .format("YYYY-MM-DD hh:mm:ss"),
+                            moment().format("YYYY-MM-DD hh:mm:ss")
+                          )
+                        }
                       >
                         3 month
                       </div>
@@ -647,8 +726,15 @@ export default function UserView(props) {
                       <div
                         href="javascript:void(0);"
                         className="dropdown-item"
-                        style={{ color: "black" }}
-                        // onClick={() => handleLast3MonthFilter()}
+                        style={{ color: "black", fontWeight: 650 }}
+                        onClick={() =>
+                          handleFilterVisitType(
+                            moment()
+                              .subtract(6, "months")
+                              .format("YYYY-MM-DD hh:mm:ss"),
+                            moment().format("YYYY-MM-DD hh:mm:ss")
+                          )
+                        }
                       >
                         6 month
                       </div>
@@ -754,20 +840,27 @@ export default function UserView(props) {
                                   justifyContent: "space-between",
                                 }}
                               >
-                                <button
-                                  type="button"
-                                  style={{
-                                    background: "#f47216",
-
-                                    color: "#fff",
-                                    borderRadius: 5,
-                                    width: 120,
-                                    height: 35,
-                                  }}
-                                  // onClick={() => handleAddUser()}
+                                <CSVLink
+                                  data={getAllUsersExcelDownload}
+                                  filename={`${
+                                    userDetail.firstname +
+                                    " " +
+                                    userDetail.lastname
+                                  }.csv`}
                                 >
-                                  <i class="fe-download"></i> Export
-                                </button>
+                                  <button
+                                    type="button"
+                                    className="btn width-sm"
+                                    style={{
+                                      background: "#f47216",
+                                      color: "#fff",
+                                      borderRadius: 5,
+                                      marginLeft: 5,
+                                    }}
+                                  >
+                                    <i class="fe-download"></i> Export
+                                  </button>
+                                </CSVLink>
                               </div>
                             </div>
                           </div>
@@ -829,10 +922,10 @@ export default function UserView(props) {
                                     aria-expanded="false"
                                   >
                                     <button
+                                      className="btn btn-sm"
                                       type="button"
                                       style={{
-                                        borderRadius: 5,
-                                        height: 34,
+                                        // borderRadius: 15,
                                         background: "#005db6",
                                         fontSize: 14,
                                         color: "white",
@@ -853,7 +946,14 @@ export default function UserView(props) {
                                     <div
                                       href="javascript:void(0);"
                                       className="dropdown-item"
-                                      // onClick={() => handleFilter()}
+                                      onClick={() =>
+                                        handleUserDetailVisitrFilter(
+                                          moment()
+                                            .startOf("month")
+                                            .format("YYYY-MM-DD hh:mm:ss"),
+                                          moment().format("YYYY-MM-DD hh:mm:ss")
+                                        )
+                                      }
                                     >
                                       Current month
                                     </div>
@@ -861,7 +961,18 @@ export default function UserView(props) {
                                     <div
                                       href="javascript:void(0);"
                                       className="dropdown-item"
-                                      // onClick={() => handleLastMonthFilter()}
+                                      onClick={() =>
+                                        handleUserDetailVisitrFilter(
+                                          moment()
+                                            .subtract(1, "months")
+                                            .startOf("month")
+                                            .format("YYYY-MM-DD hh:mm:ss"),
+                                          moment()
+                                            .subtract(1, "months")
+                                            .endOf("month")
+                                            .format("YYYY-MM-DD hh:mm:ss")
+                                        )
+                                      }
                                     >
                                       Last month
                                     </div>
@@ -869,7 +980,14 @@ export default function UserView(props) {
                                     <div
                                       href="javascript:void(0);"
                                       className="dropdown-item"
-                                      // onClick={() => handleLast3MonthFilter()}
+                                      onClick={() =>
+                                        handleUserDetailVisitrFilter(
+                                          moment()
+                                            .subtract(3, "months")
+                                            .format("YYYY-MM-DD hh:mm:ss"),
+                                          moment().format("YYYY-MM-DD hh:mm:ss")
+                                        )
+                                      }
                                     >
                                       Last 3 month
                                     </div>

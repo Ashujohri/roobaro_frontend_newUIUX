@@ -12,58 +12,10 @@ import Row from "react-bootstrap/Row";
 
 export default function LoginWithMobile() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [getLoading, setLoading] = useState(false);
-  const [generatedOtp, setGeneratedOtp] = useState("");
-  const [btnStatus, setBtnStatus] = useState(false);
   const [getMobile, setMobile] = useState();
   const [checkvalidate, setcheckvalidate] = useState(false);
   const [validated, setValidated] = useState(false);
-
-  const handleVerify = () => {
-    navigate({ pathname: `/MobileVerify` });
-  };
-
-  // const GenerateOtp = async () => {
-  //   var otp = parseInt(Math.random() * 8999) + 1000;
-  //   console.log("OTP>>>>>>>>>>>>", otp);
-
-  //   var result = await postDataAxiosWithoutToken("visitor/sendOTP", {
-  //     mobile: mobile,
-  //     otp: otp,
-  //   });
-  //   console.log("result in OTP", result);
-  //   alert(result.message)
-  //   setBtnStatus(true);
-  //   setBtnMsg("Change Mobile No");
-  //   setGeneratedOtp(otp);
-  // };
-
-  // const MobileDisable = () => {
-
-  //   if (btnMsg == "Change Mobile No") {
-
-  //     setBtnStatus(false);
-
-  //     setMobile("");
-
-  //   }
-
-  // };
-
-  //   useEffect(() => {
-  //     chkToken();
-  //   }, [props]);
-
-  //   const chkToken = async () => {
-  //     console.log("in auth login chk token");
-  //     const token = localStorage.getItem("token");
-  //     if (!token) {
-  //       navigate("/AdminLogin", { replace: true });
-  //     } else {
-  //       navigate("/", { replace: true });
-  //     }
-  //   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -78,28 +30,32 @@ export default function LoginWithMobile() {
   };
 
   const handleOtp = async (e) => {
-    e.preventDefault();
-
-    var otp = parseInt(Math.random() * 8999) + 1000;
-
-    // alert(result)
-    var result = await postDataAxios("users/authenticate", {
-      mobile: getMobile,
-    });
-    alert(JSON.stringify(result));
-    if (result.status === true) {
-      console.log("result------------------", result);
-      // var result = await postDataAxios("users/...",{mobile:getMobile,otp:otp})
-      navigate(`/MobileVerify`, {
-        state: {
-          otp: otp,
-          roleName: result.roleName[0],
-          data: JSON.stringify(result.data),
-          scopes: JSON.stringify(result.scopes),
-          token: result.token[0],
-          status: result.status,
-        },
+    try {
+      var otp = parseInt(Math.random() * 8999) + 1000;
+      let result = await postDataAxios("users/authenticate", {
+        mobile: getMobile,
       });
+      console.log("result", result);
+      if (result.status === true) {
+        let response = await postDataAxios("users/LoginSendOTP", {
+          mobile: getMobile,
+          otp: otp,
+        });
+        if (response.status === true) {
+          navigate(`/MobileVerify`, {
+            state: {
+              otp: otp,
+              roleName: result.roleName[0],
+              data: result.data,
+              scopes: result.scopes,
+              token: result.token,
+              status: result.status,
+            },
+          });
+        }
+      }
+    } catch (error) {
+      console.log("error in catch", error);
     }
   };
 

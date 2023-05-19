@@ -6,30 +6,22 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import OTPInput, { ResendOTP } from "otp-input-react";
 
-
 export default function OtpModel(props) {
+  //  alert(OTP)
 
-//  alert(OTP)
-
-  const handleClose = () =>{
-    props.setOpen(true)
-  }
+  const handleClose = () => {
+    props.setOpen(true);
+  };
   // const handleClick = () =>{
   //   if(props.otp==OTP){
 
-      
   //   }else{
 
   //   }
   // }
 
-
-  
-  
-
   return (
     <div>
-      
       <Modal
         open={props.open}
         // onClose={handleClose}
@@ -44,7 +36,12 @@ export default function OtpModel(props) {
           <div className="text-right">
             <h4
               className="text-uppercase mt-0"
-              style={{ fontSize: 20, fontWeight: "bold", marginTop: 10 ,fontWeight:800}}
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                marginTop: 10,
+                fontWeight: 800,
+              }}
             >
               Verify OTP
             </h4>
@@ -52,14 +49,14 @@ export default function OtpModel(props) {
           <label
             for="simpleinput"
             class="form-label"
-            style={{ fontSize: 10, fontWeight: "bold",fontWeight:500 }}
+            style={{ fontSize: 10, fontWeight: "bold", fontWeight: 500 }}
           >
             We have sent an OTP to visitor mobile number
             {/* <ResendOTP
                           maxTime={30}
                           /> */}
           </label>
-          
+
           <div
             style={{
               fontSize: 16,
@@ -80,8 +77,13 @@ export default function OtpModel(props) {
               secure
             />
           </div>
-          {props.error && props.OTP.length<=0?
-      <div style={{textAlign:"left",color:'red',marginBottom:18}}>{props.error}</div>:<></>}
+          {props.error && props.OTP.length <= 0 ? (
+            <div style={{ textAlign: "left", color: "red", marginBottom: 18 }}>
+              {props.error}
+            </div>
+          ) : (
+            <></>
+          )}
 
           <div
             style={{ display: "flex", justifyContent: "left", marginTop: 15 }}
@@ -93,12 +95,13 @@ export default function OtpModel(props) {
                 width: 90,
                 borderRadius: 3,
               }}
-              onClick={()=>{props.yesClick();}}
+              onClick={() => {
+                props.yesClick();
+              }}
             >
               Submit
             </Button>
           </div>
-        
         </Box>
       </Modal>
     </div>

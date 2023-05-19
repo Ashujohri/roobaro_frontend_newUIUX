@@ -28,7 +28,7 @@ export default function Minister(props) {
   const fetchAllUser = async () => {
     try {
       var res = await getDataAxios(`minister/displayAllMinister`);
-      
+
       if (res.status == true) {
         setAllMinisters(res.result);
         setMinisterTableData(res.result);
@@ -65,7 +65,6 @@ export default function Minister(props) {
 
   const showEmployee = (i) => {
     let Id = "";
-    let ministerName = "";
     let Name = "";
     let mobileNumber = "";
     let Email = "";
@@ -74,7 +73,6 @@ export default function Minister(props) {
     try {
       Id = getAllMinisters[i].id;
       Name = getAllMinisters[i].firstname + " " + getAllMinisters[i].lastname;
-      ministerName = getAllMinisters[i].MinisterName;
       mobileNumber = getAllMinisters[i].mobile_number;
       Email = getAllMinisters[i].email;
       createdDate = moment(getAllMinisters[i].created_at).format(
@@ -83,7 +81,6 @@ export default function Minister(props) {
       Status = getAllMinisters[i].status;
     } catch (error) {
       Id = "";
-      ministerName = "";
       Name = "";
       mobileNumber = "";
       Email = "";
@@ -98,10 +95,11 @@ export default function Minister(props) {
         <td> {Email} </td>
         <td> {createdDate} </td>
         <td> {Status} </td>
-        
+
         <td>
           <button
             type="button"
+            class="btn btn-primary btn-sm"
             style={{
               borderRadius: 25,
               backgroundColor: "#23aed2",
@@ -182,11 +180,15 @@ export default function Minister(props) {
       var id = `${item.id}`;
       if (
         (item.firstname &&
-          item.firstname.toLowerCase().includes(e.target.value.toLowerCase())) ||
+          item.firstname
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())) ||
         (item.lastname &&
           item.lastname.toLowerCase().includes(e.target.value.toLowerCase())) ||
-          (item.mobile_number &&
-            item.mobile_number.toLowerCase().includes(e.target.value.toLowerCase())) ||
+        (item.mobile_number &&
+          item.mobile_number
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())) ||
         (id && id.includes(e.target.value))
       ) {
         searchArr.push(item);
@@ -249,11 +251,9 @@ export default function Minister(props) {
                                     }}
                                   >
                                     <button
-                                      type="button"
-                                      // class="btn btn-primary btn-sm"
+                                      className="btn width-sm"
                                       style={{
                                         background: "#ff7e24",
-
                                         color: "#fff",
                                         borderRadius: 7,
                                         width: 135,
@@ -421,9 +421,7 @@ export default function Minister(props) {
                                         className="dropdown-toggle arrow-none card-drop"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false"
-                                      >
-                                        
-                                      </a>
+                                      ></a>
                                       <div
                                         className="dropdown-menu dropdown-menu-end"
                                         style={{ cursor: "pointer" }}
@@ -535,7 +533,7 @@ export default function Minister(props) {
                                     <div style={{ color: "black" }}>ID</div>
                                   </div>
                                 </th>
-            
+
                                 <th
                                   style={{
                                     cursor: "pointer",
@@ -632,9 +630,7 @@ export default function Minister(props) {
                                       alignItems: "center",
                                     }}
                                   >
-                                    <div style={{ color: "black" }}>
-                                     status
-                                    </div>
+                                    <div style={{ color: "black" }}>status</div>
                                   </div>
                                 </th>
 
