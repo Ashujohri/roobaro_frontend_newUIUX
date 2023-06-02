@@ -4,6 +4,7 @@ import { getDataAxios } from "../Services/NodeServices";
 import Swal from "sweetalert2";
 import moment from "moment";
 import "../BarchartCss.css";
+import { Trans } from "react-i18next";
 
 export default function AdminBarChart(props) {
   var UserData = JSON.parse(localStorage.getItem("userData"));
@@ -88,7 +89,7 @@ export default function AdminBarChart(props) {
             fontWeight: "bold",
           }}
         >
-          Visitors trend
+          <Trans i18nKey="Visitors_trend"> Visitors trend </Trans>
         </div>
         <div style={{ paddingRight: 10 }}>
           <div className="dropdown float-end">
@@ -100,23 +101,20 @@ export default function AdminBarChart(props) {
             >
               <button
                 type="button"
-                class="btn btn-info btn-sm"
+                class="btn btn-sm"
                 style={{
-                  borderRadius: 12,
-                  height: 28,
-                  backgroundColor: "#005db6",
+                  background: "#005db6",
+                  color: "white",
                 }}
               >
-                <i class="mdi mdi-filter"></i> Filter
+                <i class="mdi mdi-filter"></i>{" "}
+                <Trans i18nKey="filter"> Filter </Trans>
               </button>
             </a>
             <div
               className="dropdown-menu dropdown-menu-end"
               style={{
                 cursor: "pointer",
-                backgroundColor: "#005db6",
-                color: "white",
-                borderRadius: 18,
               }}
             >
               {/* item*/}
@@ -137,7 +135,7 @@ export default function AdminBarChart(props) {
                   )
                 }
               >
-                1 month
+                <Trans i18nKey="1_Month"> 1 month </Trans>
               </div>
               {/* item*/}
               <div
@@ -153,7 +151,7 @@ export default function AdminBarChart(props) {
                   )
                 }
               >
-                3 month
+                <Trans i18nKey="3_Month"> 3 month </Trans>
               </div>
               {/* item*/}
               <div
@@ -169,7 +167,7 @@ export default function AdminBarChart(props) {
                   )
                 }
               >
-                6 month
+                <Trans i18nKey="6_Month"> 6 month </Trans>
               </div>
             </div>
           </div>

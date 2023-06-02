@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import backimg from "../../../images/background.png";
-// import { postDataAxios } from "../../../services/FetchNodeServices";
-import OTPInput, { ResendOTP } from "otp-input-react";
+import backimg from "../../../images/bg.png";
+import OTPInput from "otp-input-react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
+import { postDataAxios } from "../../Services/NodeServices";
 
 export default function MobileVerify(props) {
   const navigate = useNavigate();
@@ -12,37 +12,53 @@ export default function MobileVerify(props) {
   const [OTP, setOTP] = useState(location.state.otp);
   const [getLoading, setLoading] = useState(false);
   const [getInputOTP, setInputOTP] = useState("");
-  var [time, setTime] = useState(10);
-  var [refresh, setRefresh] = useState(false);
-  var [seconds, setSeconds] = useState(true);
-  var interval;
-  console.table("MobileVerify", location.state);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(30);
+  const [error, setError] = useState(false);
+  const [getVerifyMobile, setVerifyMobile] = useState(location.state.mobile);
 
-  const myTimer = () => {
-    if (seconds) {
-      var t = time;
-      interval = setInterval(() => {
-        if (t >= 1) {
-          t = t - 1;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (seconds > 0) {
+        setSeconds(seconds - 1);
+      }
 
-          setTime(t);
-        } else {
+      if (seconds === 0) {
+        if (minutes === 0) {
           clearInterval(interval);
-          setSeconds(false);
+        } else {
+          setSeconds(59);
+          setMinutes(minutes - 1);
         }
-      }, 1000);
-      setRefresh(!refresh);
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [seconds]);
+
+  const resendOTP = async () => {
+    try {
+      setMinutes(0);
+      setSeconds(30);
+      setOTP("");
+      var otp = parseInt(Math.random() * 8999) + 1000;
+      let response = await postDataAxios("users/LoginSendOTP", {
+        mobile: getVerifyMobile,
+        otp: otp,
+      });
+      if (response.status === true) {
+        setOTP(otp);
+        Swal.fire({ icon: "success", text: "Re-send OTP" });
+      }
+    } catch (error) {
+      console.log("error in resend", error);
     }
   };
 
-  useEffect(function () {
-    myTimer();
-  }, []);
-
   const handleverify = (e) => {
     e.preventDefault();
-    console.log("getOTP", getInputOTP);
-    console.log("OTP", OTP);
     try {
       if (OTP == getInputOTP) {
         localStorage.setItem(
@@ -81,7 +97,6 @@ export default function MobileVerify(props) {
               alignItems: "center",
             }}
           >
-            {/* <div className="row justify-content-center"> */}
             <div style={{ width: "30%", borderRadius: 21 }}>
               <div className="text-center mt-1">
                 <a href={false}>
@@ -111,23 +126,24 @@ export default function MobileVerify(props) {
                   style={{
                     backgroundColor: "white",
                     borderRadius: 15,
-                    boxShadow: "1px 2px 9px #000",
+                    boxShadow: "1px 1px 2px #f2f2f2",
                   }}
                 >
                   <div className="card-body p-4">
                     <div className="text-right">
                       <h4
                         className="text-uppercase mt-0"
-                        style={{ fontSize: 23, fontWeight: "bold" }}
+                        style={{
+                          fontSize: 20,
+                          fontWeight: "bold",
+                          marginTop: 10,
+                        }}
                       >
                         Verify OTP
                       </h4>
                     </div>
                     <form class="was-validated">
                       <div className="mb-2 w-100">
-                        {/* <label for="simpleinput" class="form-label">
-                          Enter OTP
-                        </label> */}
                         <div>
                           <OTPInput
                             value={getInputOTP}
@@ -145,13 +161,29 @@ export default function MobileVerify(props) {
                           />
                         </div>
                       </div>
+                      {error && OTP.length <= 0 ? (
+                        <div
+                          style={{
+                            textAlign: "left",
+                            color: "red",
+                            marginBottom: 12,
+                          }}
+                        >
+                          Enter Otp
+                        </div>
+                      ) : (
+                        <></>
+                      )}
                       <div className="d-grid text-center">
                         <button
                           className="btn"
                           style={{
-                            backgroundColor: "#3742fa",
+                            backgroundColor: "#005db6",
                             color: "white",
-                            borderRadius: 12,
+                            borderRadius: 10,
+                            fontFamily: "Poppins",
+                            fontWeight: 600,
+                            fontSize: 12,
                           }}
                           type="submit"
                           onClick={handleverify}
@@ -159,16 +191,43 @@ export default function MobileVerify(props) {
                           Login
                         </button>
                       </div>
-                      <label
-                        for="simpleinput"
-                        class="form-label"
-                        style={{ fontSize: 16, fontWeight: "bolder" }}
+
+                      <div
+                        style={{
+                          flexDirection: "row",
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
                       >
-                        Didn't recevied OTP? Resend ....{time}
-                        {/* <ResendOTP
-                          maxTime={30}
-                          /> */}
-                      </label>
+                        <div style={{ cursor: "pointer" }}>
+                          Didn't received OTP ?
+                        </div>
+                        {seconds > 0 || minutes > 0 ? (
+                          <div
+                            style={{
+                              marginLeft: 5,
+                              color: "orange",
+                              fontSize: 16,
+                              cursor: "pointer",
+                            }}
+                          >
+                            {minutes < 10 ? `0${minutes}` : minutes}:
+                            {seconds < 10 ? `0${seconds}` : seconds}
+                          </div>
+                        ) : (
+                          <div
+                            onClick={resendOTP}
+                            style={{
+                              color: "orange",
+                              marginLeft: 20,
+                              fontSize: 14,
+                              cursor: "pointer",
+                            }}
+                          >
+                            Resend
+                          </div>
+                        )}
+                      </div>
                     </form>
                   </div>
                 </div>

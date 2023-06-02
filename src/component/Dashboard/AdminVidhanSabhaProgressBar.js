@@ -7,6 +7,7 @@ import {
 import "react-circular-progressbar/dist/styles.css";
 import Swal from "sweetalert2";
 import moment from "moment";
+import { Trans } from "react-i18next";
 
 export default function AdminVidhanSabhaProgressBar(props) {
   var UserData = JSON.parse(localStorage.getItem("userData"));
@@ -61,28 +62,26 @@ export default function AdminVidhanSabhaProgressBar(props) {
   };
 
   // API calling for Vidhansabha Segment Filter
-  const handleFilter = async () => {
+  const handleFilter = async (value, startDate, endDate) => {
     try {
       if (getVidhanSegmentFilter != "" || getVidhanStartDateFilter != "") {
         let result = await getDataAxios(
           `admin/dashboardVidhanSabhaFilterKPI/${UserData.minister_id}/${
-            getVidhanSegmentFilter == "" ? "undefined" : getVidhanSegmentFilter
+            getVidhanSegmentFilter == "" ? value : getVidhanSegmentFilter
           }/${
             getVidhanStartDateFilter == ""
-              ? "undefined"
+              ? startDate
               : getVidhanStartDateFilter
-          }/${
-            getVidhanEndDateFilter == "" ? undefined : getVidhanEndDateFilter
-          }`
+          }/${getVidhanEndDateFilter == "" ? endDate : getVidhanEndDateFilter}`
         );
         if (result?.status === true) {
           if (result.result.length != 0) {
             setVidhanSabhaSegment(result.result[0].vidhansabhaPercent);
             setTotalVisitor(result.result[0].TotalVisitor);
-            setVidhanSegmentFilter("");
-            setVidhanFilter("");
-            setVidhanEndDateFilter("");
-            setVidhanStartDateFilter("");
+            // setVidhanSegmentFilter("");
+            // setVidhanFilter("");
+            // setVidhanEndDateFilter("");
+            // setVidhanStartDateFilter("");
           } else {
             setVidhanSabhaSegment(0);
             setTotalVisitor(0);
@@ -127,6 +126,17 @@ export default function AdminVidhanSabhaProgressBar(props) {
   const vidhanFilterFunc = (value) => {
     if (value == "1 Month") {
       setVidhanFilter(value);
+      handleFilter(
+        "undefined",
+        moment()
+          .subtract(1, "months")
+          .startOf("month")
+          .format("YYYY-MM-DD hh:mm:ss"),
+        moment()
+          .subtract(1, "months")
+          .endOf("month")
+          .format("YYYY-MM-DD hh:mm:ss")
+      );
       setVidhanStartDateFilter(
         moment()
           .subtract(1, "months")
@@ -184,7 +194,7 @@ export default function AdminVidhanSabhaProgressBar(props) {
         }}
       >
         <div
-          class="col-8"
+          class="col-7"
           style={{
             display: "flex",
             // fontFamily: "Poppins",
@@ -192,23 +202,23 @@ export default function AdminVidhanSabhaProgressBar(props) {
             fontWeight: "bold",
           }}
         >
-          Vidhansabha Segments
+          <Trans i18nKey="Vidhansabha_Segments"> Vidhansabha Segments </Trans>
         </div>
         <div
-          className="col-4"
+          className="col-5"
           style={{ display: "flex", justifyContent: "flex-end" }}
         >
           <button
-            className="btn btn-sm waves-effect waves-light"
+            className="btn btn waves-effect waves-light"
             style={{
               background: "#ff7e24",
               color: "#fff",
               borderRadius: 15,
-              height: "30px",
+              // height: "30px",
             }}
             onClick={() => handleFilter()}
           >
-            Apply
+            <Trans i18nKey="Apply"> Apply </Trans>
           </button>
         </div>
       </div>
@@ -243,7 +253,10 @@ export default function AdminVidhanSabhaProgressBar(props) {
             >
               {convertVidhanFunc(parseFloat(getVidhanSabhaSegment))}
             </div>
-            <div style={{ fontSize: 10 }}>{getTotalVisitor} total visitors</div>
+            <div style={{ fontSize: 10 }}>
+              {getTotalVisitor}{" "}
+              <Trans i18nKey="Total_Visitors"> total visitors </Trans>
+            </div>
           </div>
         </CircularProgressbarWithChildren>
       </div>
@@ -265,8 +278,10 @@ export default function AdminVidhanSabhaProgressBar(props) {
                 color: "white",
                 borderRadius: 18,
               }}
-              value={getVidhanSegmentFilter}
-              onChange={(e) => vidhanFilterFunc(e.target.value)}
+              // value={getVidhanSegmentFilter}
+              onChange={(e) => {
+                vidhanFilterFunc(e.target.value);
+              }}
             >
               <option style={{ color: "white", fontWeight: 650 }} selected>
                 VidhanSabha
@@ -281,7 +296,7 @@ export default function AdminVidhanSabhaProgressBar(props) {
             <select
               className="form-select form-select-sm"
               style={{
-                height: 28,
+                // height: 28,
                 backgroundColor: "#ff7e24",
                 borderRadius: 18,
                 cursor: "pointer",

@@ -5,15 +5,17 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import RadioButton from "../Radiobutton";
-import { postDataAxios } from "../../Services/NodeServices";
+import { ServerURL, postDataAxios } from "../../Services/NodeServices";
 import { useNavigate, useLocation } from "react-router-dom";
 import Topbar from "../../Header/Topbar";
 import ListItem from "../../Dashboard/ListItem";
+import { Trans } from "react-i18next";
 
 export default function VisitDetails(props) {
   const location = useLocation();
   const navigate = useNavigate();
   const visitorData = location.state;
+  console.log("visitorData", visitorData);
   const [Firstname, setFirstName] = useState(visitorData.firstname);
   const [LastName, setLastName] = useState(visitorData.lastname);
   const [visitorstatus, setVisitorStatus] = useState(
@@ -29,13 +31,15 @@ export default function VisitDetails(props) {
     moment(visitorData.created_at).format("YYYY-MM-DD HH:mm:ss")
   );
   const [userId, setUserId] = useState(visitorData.user_id);
-  const [engagementTime, setEngagementTime] = useState("");
+  const [engagementTime, setEngagementTime] = useState(
+    moment.utc(visitorData.engage_time * 1000).format("HH:mm:ss")
+  );
   const [mantralaya, setMantralaya] = useState(visitorData.mantralya_id);
   const [mantralayaName, setMantralayaName] = useState(
     visitorData.MantralayName
   );
   const [vidhansabhaName, setVidhansabhaName] = useState(
-    visitorData.Vidhansabha
+    visitorData.VidhansabhaName
   );
   const [MinisterId, setMinisterId] = useState(visitorData.minister_id);
   const [constituency, setConstituency] = useState(
@@ -44,11 +48,8 @@ export default function VisitDetails(props) {
   const [getConstituencyId, setConstituencyId] = useState(
     visitorData.constituency_id
   );
-  const [Assign, setAssign] = useState("");
-  const [Priority, setPriority] = useState([]);
   const [reasonVisit, setReasonVisit] = useState(visitorData.reason_to_visit);
   const [refrence, setReference] = useState(visitorData.refernce);
-  const [CustomerPriorityList, setCustomerPriorityList] = useState([]);
   const [checkvalidate, setcheckvalidate] = useState(false);
   const [validated, setValidated] = useState(false);
   const [Gender, setGender] = useState(visitorData.gender);
@@ -61,17 +62,31 @@ export default function VisitDetails(props) {
     visitorData.location_type
   );
   const [getShowName, setShowName] = useState("Visitor Detail");
+  const [getGroupName, setGroupName] = useState(visitorData.group_member);
+  const [showEngagementTime, setShowEngagementTime] = useState("");
 
   // Engade Time//
   const handleClick = () => {
-    let startTime = moment().format(visitAdded);
-    var endTime = moment().format("hh:mm:ss");
-    let aa = moment
-      .utc(moment(endTime, " hh:mm:ss").diff(moment(startTime, " hh:mm:ss")))
-      .format("hh:mm:ss");
-    setEngagementTime(aa);
+    let startTime = moment(visitAdded).format("HH:mm:ss");
+    let hms1 = startTime;
+    let a1 = hms1.split(":");
+    let seconds1 = a1[0] * 60 * 60 + +a1[1] * 60 + +a1[2];
+    let endTime = moment().format("HH:mm:ss");
+    let hms2 = endTime;
+    let a2 = hms2.split(":");
+    let seconds2 = a2[0] * 60 * 60 + +a2[1] * 60 + +a2[2];
+    let engagetime = seconds2 - seconds1;
+    let d = Number(engagetime);
+    let h = Math.floor(d / 3600);
+    let m = Math.floor((d % 3600) / 60);
+    let s = Math.floor((d % 3600) % 60);
+    let hDisplay = h > 0 ? h + (h == 1 ? " hour: " : " hours: ") : "";
+    let mDisplay = m > 0 ? m + (m == 1 ? " minute: " : " minutes: ") : "";
+    let sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+    let aa = hDisplay + mDisplay + sDisplay;
+    // console.log("aaaaaaaaaaaaa", aa);
+    setShowEngagementTime(aa);
   };
-
   const data = [
     { type: "Male", id: 1, color: false },
     { type: "Female", id: 2, color: false },
@@ -97,29 +112,32 @@ export default function VisitDetails(props) {
 
   const handleSubmit = async () => {
     try {
+      let endDate = moment().format("YYYY-MM-DD HH:mm:ss");
       let body = {
         firstname: Firstname,
         lastname: LastName,
         mobile_number: Mobile,
         gender: Gender,
-        user_id: userId,
-        refrence: refrence,
-        vidhansabha_id: vidhanSabha,
         physically_disabled: PhysicallyDisabled,
-        visitor_type: visitType,
-        mantralya_id: mantralaya,
-        reason_to_visit: reasonVisit.toString(),
         date_of_birth: DOB,
-        minister_id: MinisterId,
-        visitor_status: "Completed",
-        group_member: "Sachin",
-        constituency_id: getConstituencyId,
-        updated_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+        visitor_type: visitType,
+        vidhansabha_id: vidhanSabha,
+        mantralya_id: mantralaya,
+        refrence: refrence,
+        reason_to_visit: reasonVisit.toString(),
         picture: picture,
-        id: id,
+        user_id: userId,
         created_at: visitAdded,
+        updated_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+        minister_id: MinisterId,
+        group_member: getGroupName,
+        visitor_status: "Completed",
+        engage_time: showEngagementTime,
         location_type: getLocationType ? getLocationType : "Office",
+        constituency_id: getConstituencyId,
+        id: id,
       };
+      console.log("body", body);
       let result = await postDataAxios(`visitors/updateVisitor/${id}`, body);
 
       if (result.status == true) {
@@ -160,31 +178,11 @@ export default function VisitDetails(props) {
                         alignItems: "center",
                       }}
                     >
-                      <b>Visit Details</b>
+                      <b>
+                        <Trans i18nKey="visit_details"> Visitor Details </Trans>
+                      </b>
                       {visitorstatus === "Completed" ||
-                      visitorstatus === "completed" ? (
-                        <button
-                          disabled
-                          class="btn btn-sm waves-effect waves-light"
-                          style={{
-                            background: "#b2bec3",
-                            color: "#fff",
-                            borderRadius: 15,
-                            height: "30px",
-                            width: 150,
-                            fontSize: 12,
-                            display: "flex",
-                            justifyContent: "space-evenly",
-                            alignItems: "center",
-                          }}
-                        >
-                          <img
-                            src="../images/success.png"
-                            style={{ width: 15 }}
-                          />{" "}
-                          Mark as Completed
-                        </button>
-                      ) : (
+                      visitorstatus === "completed" ? null : (
                         <button
                           onClick={() => handleSubmit()}
                           type="submit"
@@ -195,7 +193,7 @@ export default function VisitDetails(props) {
                             borderRadius: 15,
                             height: "30px",
                             width: 150,
-                            fontSize: 12,
+                            fontSize: 11,
                             display: "flex",
                             justifyContent: "space-evenly",
                             alignItems: "center",
@@ -205,7 +203,10 @@ export default function VisitDetails(props) {
                             src="../images/success.png"
                             style={{ width: 15 }}
                           />{" "}
-                          Mark as Completed
+                          <Trans i18nKey="mark_as_completed">
+                            {" "}
+                            Mark as Completed{" "}
+                          </Trans>
                         </button>
                       )}
                     </div>
@@ -228,13 +229,21 @@ export default function VisitDetails(props) {
                             md="6"
                             controlId="validationCustom01"
                           >
-                            <Form.Label>Visit Added</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="visit_added">
+                                {" "}
+                                Visitor Added Time{" "}
+                              </Trans>
+                            </Form.Label>
                             <Form.Control value={visitAdded} disabled />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Auto fill visit added date
+                              <Trans i18nKey="Auto_fill_visitor_added_date">
+                                {" "}
+                                Auto fill visit added date{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
 
@@ -243,13 +252,21 @@ export default function VisitDetails(props) {
                             md="6"
                             controlId="validationCustom02"
                           >
-                            <Form.Label>Engagement Time</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Engagement_time">
+                                {" "}
+                                Engagement Time{" "}
+                              </Trans>
+                            </Form.Label>
                             <Form.Control value={engagementTime} disabled />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Auto fill enagenment time
+                              <Trans i18nKey="Auto_fill_enagenment_time">
+                                {" "}
+                                Auto fill enagenment time{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
@@ -259,17 +276,22 @@ export default function VisitDetails(props) {
                             md="6"
                             controlId="validationCustom01"
                           >
-                            <Form.Label>First name</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="First_Name"> First name </Trans>
+                            </Form.Label>
                             <Form.Control
                               value={Firstname}
                               onChange={setFirstName}
                               disabled
                             />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Enter valid first name
+                              <Trans i18nKey="Enter_valid_first_name">
+                                {" "}
+                                Enter valid first name{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
 
@@ -278,13 +300,18 @@ export default function VisitDetails(props) {
                             md="6"
                             controlId="validationCustom02"
                           >
-                            <Form.Label>Last name</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Last_Name"> Last name </Trans>
+                            </Form.Label>
                             <Form.Control value={LastName} disabled />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Enter valid last name
+                              <Trans i18nKey="Enter_valid_last_name">
+                                {" "}
+                                Enter valid last name{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
@@ -295,17 +322,25 @@ export default function VisitDetails(props) {
                             md="6"
                             controlId="validationCustom03"
                           >
-                            <Form.Label>Mobile Number</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Mobile_Number">
+                                {" "}
+                                Mobile Number{" "}
+                              </Trans>
+                            </Form.Label>
                             <Form.Control
                               value={Mobile}
                               onChange={setMobile}
                               disabled
                             />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Enter valid mobile number
+                              <Trans i18nKey="Enter_valid_mobile_number">
+                                {" "}
+                                Enter valid mobile number{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
 
@@ -314,19 +349,26 @@ export default function VisitDetails(props) {
                             md="6"
                             controlId="validationCustom04"
                           >
-                            <Form.Label>Visitor Type</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Visit_Type"> Visitor Type </Trans>
+                            </Form.Label>
                             <Form.Control value={visitType} disabled />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Select visit type
+                              <Trans i18nKey="Select_visitor_type">
+                                {" "}
+                                Select visitor type{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
                         <Row className="mb-2">
                           <Form.Group as={Col} md="6">
-                            <div style={{ marginBottom: 12 }}>Gender</div>
+                            <div style={{ marginBottom: 12 }}>
+                              <Trans i18nKey="Gender"> Gender </Trans>
+                            </div>
                             <div
                               style={{ flexDirection: "row", display: "flex" }}
                             >
@@ -334,12 +376,16 @@ export default function VisitDetails(props) {
                                 getType={Gender}
                                 data={data}
                                 setType={setGender}
+                                disabled={true}
                               />
                             </div>
                           </Form.Group>
                           <Form.Group as={Col} md="6">
                             <div style={{ marginBottom: 12 }}>
-                              Physically Disabled
+                              <Trans i18nKey="Physically_Disabled">
+                                {" "}
+                                Physically Disabled{" "}
+                              </Trans>
                             </div>
                             <div
                               style={{ flexDirection: "row", display: "flex" }}
@@ -348,6 +394,7 @@ export default function VisitDetails(props) {
                                 getType={PhysicallyDisabled}
                                 data={data2}
                                 setType={setPhysicallyDisabled}
+                                disabled={true}
                               />
                             </div>
                           </Form.Group>
@@ -359,17 +406,25 @@ export default function VisitDetails(props) {
                             md="6"
                             controlId="validationCustom05"
                           >
-                            <Form.Label>Date of birth</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Date_of_birth">
+                                {" "}
+                                Date of birth{" "}
+                              </Trans>
+                            </Form.Label>
                             <Form.Control
                               value={DOB}
                               onChange={setDOB}
                               disabled
                             />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Please pick a valid date
+                              <Trans i18nKey="Please_pick_a_valid_date">
+                                {" "}
+                                Please pick a valid date{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
 
@@ -378,14 +433,22 @@ export default function VisitDetails(props) {
                             md="6"
                             controlId="validationCustom04"
                           >
-                            <Form.Label>Visit Status</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Visit_Status">
+                                {" "}
+                                Visit Status{" "}
+                              </Trans>
+                            </Form.Label>
                             <Form.Control value={visitorstatus} disabled />
 
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Select visit status
+                              <Trans i18nKey="Select_visit_status">
+                                {" "}
+                                Select visit status{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
@@ -396,14 +459,19 @@ export default function VisitDetails(props) {
                             md="6"
                             controlId="validationCustom04"
                           >
-                            <Form.Label>Vidhansabha</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Vidhansabha"> Vidhansabha </Trans>
+                            </Form.Label>
                             <Form.Control value={vidhansabhaName} disabled />
 
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Select vidhansabha
+                              <Trans i18nKey="Select_Vidhansabha">
+                                {" "}
+                                Select vidhansabha{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
 
@@ -412,14 +480,22 @@ export default function VisitDetails(props) {
                             md="6"
                             controlId="validationCustom04"
                           >
-                            <Form.Label>Constituency</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Constituency">
+                                {" "}
+                                Constituency{" "}
+                              </Trans>
+                            </Form.Label>
                             <Form.Control value={constituency} disabled />
 
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Select relevant constituency
+                              <Trans i18nKey="Select_Constituency">
+                                {" "}
+                                Select relevant constituency{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
@@ -430,14 +506,19 @@ export default function VisitDetails(props) {
                             md="6"
                             controlId="validationCustom04"
                           >
-                            <Form.Label>Mantralaya</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Mantralaya"> Mantralaya </Trans>
+                            </Form.Label>
                             <Form.Control value={mantralayaName} disabled />
 
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Select relevant mantralaya
+                              <Trans i18nKey="Select_Mantralaya">
+                                {" "}
+                                Select relevant mantralaya{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
 
@@ -446,13 +527,18 @@ export default function VisitDetails(props) {
                             md="6"
                             controlId="validationCustom01"
                           >
-                            <Form.Label>Refrence</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Reference"> Reference </Trans>
+                            </Form.Label>
                             <Form.Control value={refrence} disabled />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Enter reason to visit
+                              <Trans i18nKey="Enter_reference,_If_any!">
+                                {" "}
+                                Enter reference, If any!{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
@@ -460,10 +546,15 @@ export default function VisitDetails(props) {
                         <Row className="mb-3">
                           <Form.Group
                             as={Col}
-                            md="12"
+                            md="6"
                             controlId="validationCustom02"
                           >
-                            <Form.Label>Reason to visit</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Reason_to_visit">
+                                {" "}
+                                Reason to visit{" "}
+                              </Trans>
+                            </Form.Label>
                             <Form.Control
                               as="textarea"
                               rows={3}
@@ -471,19 +562,61 @@ export default function VisitDetails(props) {
                               disabled
                             />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Please enter template Description
+                              <Trans i18nKey="Please_enter_reason_to_visit">
+                                {" "}
+                                Please enter reason to visit{" "}
+                              </Trans>
+                            </Form.Control.Feedback>
+                          </Form.Group>
+
+                          <Form.Group
+                            as={Col}
+                            md="6"
+                            controlId="validationCustom01"
+                          >
+                            <Form.Label>
+                              <Trans i18nKey="group_member_name">
+                                {" "}
+                                Group Member Name{" "}
+                              </Trans>
+                            </Form.Label>
+                            <Form.Control value={getGroupName} disabled />
+                            <Form.Control.Feedback>
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
+                            </Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">
+                              <Trans i18nKey="Enter_reference,_If_any!">
+                                {" "}
+                                Enter Group Name, If any!{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
-                        <img
-                          src={picture}
-                          alt=""
-                          height={100}
-                          style={{ marginTop: 5 }}
-                        />
+                        <Row className="mb-3">
+                          <div
+                            className="col-6"
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-start",
+                              alignItems: "center",
+                              width: 120,
+                            }}
+                          >
+                            <div className="position-relative">
+                              <img
+                                // src={`${ServerURL}/images/${picture}`}
+                                src={picture}
+                                alt=""
+                                height={100}
+                                class="img-fluid avatar rounded-circle"
+                                // style={{ marginTop: 5 }}
+                              />
+                            </div>
+                          </div>
+                        </Row>
                       </Form>
                     </div>
                   </div>

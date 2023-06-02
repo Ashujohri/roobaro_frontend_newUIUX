@@ -1,15 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import "./i18n";
+import { Suspense } from "react";
+import { IntlProvider } from "react-intl";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <>
-  <React.StrictMode>
-    <App />
-    </React.StrictMode>
+    <IntlProvider locale="en">
+      <React.StrictMode>
+        <Suspense fallback={<div>Loading ...</div>}>
+          <App />
+        </Suspense>
+      </React.StrictMode>
+    </IntlProvider>
   </>
 );
 

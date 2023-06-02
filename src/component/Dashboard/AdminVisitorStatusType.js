@@ -3,6 +3,7 @@ import { PieChart } from "react-minimal-pie-chart";
 import { getDataAxios } from "../Services/NodeServices";
 import Swal from "sweetalert2";
 import moment from "moment";
+import { Trans } from "react-i18next";
 
 export default function AdminVisitorStatusType(props) {
   var UserData = JSON.parse(localStorage.getItem("userData"));
@@ -96,7 +97,7 @@ export default function AdminVisitorStatusType(props) {
             fontWeight: "bold",
           }}
         >
-          Visit Type
+          <Trans i18nKey="Visit_Type"> Visit Type </Trans>
         </div>
         <div
           className="col-4"
@@ -111,29 +112,28 @@ export default function AdminVisitorStatusType(props) {
             >
               <button
                 type="button"
-                class="btn btn-info btn-sm"
+                class="btn btn-sm"
                 style={{
-                  borderRadius: 12,
-                  height: 28,
-                  backgroundColor: "#005db6",
+                  background: "#005db6",
+                  color: "white",
                 }}
               >
-                <i class="mdi mdi-filter"></i> Filter
+                <i class="mdi mdi-filter"></i>{" "}
+                <Trans i18nKey="filter"> Filter </Trans>
               </button>
             </a>
             <div
               className="dropdown-menu dropdown-menu-end"
               style={{
                 cursor: "pointer",
-                backgroundColor: "#005db6",
-                borderRadius: 18,
+                // backgroundColor: "#005db6",
               }}
             >
               {/* item*/}
               <div
                 href="javascript:void(0);"
                 className="dropdown-item"
-                style={{ color: "black" }}
+                style={{ color: "black", fontWeight: 650 }}
                 onClick={() =>
                   handleVisitorStatusFilter(
                     moment()
@@ -147,13 +147,13 @@ export default function AdminVisitorStatusType(props) {
                   )
                 }
               >
-                1 month
+                <Trans i18nKey="1_Month"> 1 month </Trans>
               </div>
               {/* item*/}
               <div
                 href="javascript:void(0);"
                 className="dropdown-item"
-                style={{ color: "black" }}
+                style={{ color: "black", fontWeight: 650 }}
                 onClick={() =>
                   handleVisitorStatusFilter(
                     moment()
@@ -163,13 +163,13 @@ export default function AdminVisitorStatusType(props) {
                   )
                 }
               >
-                3 month
+                <Trans i18nKey="3_Month"> 3 month </Trans>
               </div>
               {/* item*/}
               <div
                 href="javascript:void(0);"
                 className="dropdown-item"
-                style={{ color: "black" }}
+                style={{ color: "black", fontWeight: 650 }}
                 onClick={() =>
                   handleVisitorStatusFilter(
                     moment()
@@ -179,7 +179,7 @@ export default function AdminVisitorStatusType(props) {
                   )
                 }
               >
-                6 month
+                <Trans i18nKey="6_Month"> 6 month </Trans>
               </div>
             </div>
           </div>
@@ -224,7 +224,9 @@ export default function AdminVisitorStatusType(props) {
             margin: 10,
           }}
         />
-        <span>Single</span>
+        <span>
+          <Trans i18nKey="Single"> Single </Trans>
+        </span>
 
         <div
           style={{
@@ -235,7 +237,9 @@ export default function AdminVisitorStatusType(props) {
             margin: 10,
           }}
         />
-        <span> Group</span>
+        <span>
+          <Trans i18nKey="Group"> Group </Trans>
+        </span>
       </div>
     </div>
   );

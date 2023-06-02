@@ -1,24 +1,32 @@
 import React, { useEffect, useState } from "react";
 import Pagination from "@mui/material/Pagination";
 import { CSVLink } from "react-csv";
-import { PaginationItem } from "@mui/material";
+import { Button, PaginationItem } from "@mui/material";
 import { getDataAxios } from "../../Services/NodeServices";
 import { useNavigate } from "react-router-dom";
 import Topbar from "../../Header/Topbar";
 import ListItem from "../../Dashboard/ListItem";
 import swal from "sweetalert";
 import moment from "moment";
+import Modal from "react-bootstrap/Modal";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
 
-export default function Minister(props) {
+export default function Languages(props) {
   const navigate = useNavigate();
-  const [getAllMinisters, setAllMinisters] = useState([]);
+  var UserData = JSON.parse(localStorage.getItem("userData"));
+
+  const [getAllUsers, setAllUsers] = useState([]);
   const [getAllUsersExcelDownload, setAllUsersExcelDownload] = useState([]);
   const [entryStart, setEntryStart] = useState(0);
-  const [Page, setPage] = useState(1);
   const [entryEnd, setEntryEnd] = useState(10);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
-  const [getMinisterTableData, setMinisterTableData] = useState([]);
+  const [Page, setPage] = useState(1);
+  const [getUserTableData, setUserTableData] = useState([]);
   const [getLoading, setLoading] = useState(false);
+  const [show, setShow] = useState(false);
+  const [show1, setShow1] = useState(false);
 
   useEffect(() => {
     fetchAllUser();
@@ -26,11 +34,10 @@ export default function Minister(props) {
 
   const fetchAllUser = async () => {
     try {
-      var res = await getDataAxios(`minister/displayAllMinister`);
-
+      var res = await getDataAxios(`language/displayLanguage`);
       if (res.status == true) {
-        setAllMinisters(res.result);
-        setMinisterTableData(res.result);
+        setAllUsers(res.result);
+        setUserTableData(res.result);
       } else {
         swal({
           title: `${res.message}`,
@@ -43,18 +50,121 @@ export default function Minister(props) {
     }
   };
 
-  const handleViewPage = (item) => {
-    navigate("/", { state: { item } });
+  const handleShow = () => setShow(true);
+  const handleShowEdit = () => setShow1(true);
+
+  // const handleSearch = async (e) => {
+  //   var searchArr = [];
+  //   getUserTableData.map((item) => {
+  //     var id = `${item.id}`;
+  //     if (
+  //       (item.firstname &&
+  //         item.firstname
+  //           .toLowerCase()
+  //           .includes(e.target.value.toLowerCase())) ||
+  //       (item.lastname &&
+  //         item.lastname.toLowerCase().includes(e.target.value.toLowerCase())) ||
+  //       (id && id.includes(e.target.value))
+  //     ) {
+  //       searchArr.push(item);
+  //     }
+  //   });
+  //   setAllUsers(searchArr);
+  // };
+
+  const sortTable = (n) => {
+    let table,
+      rows,
+      switching,
+      i,
+      x,
+      y,
+      willSwitch,
+      directory,
+      switchCount = 0;
+    table = document.getElementById("productTable");
+    switching = true;
+    directory = "ascending";
+
+    while (switching) {
+      switching = false;
+      rows = table.rows;
+
+      for (i = 1; i < rows.length - 1; i++) {
+        willSwitch = false;
+
+        x = rows[i].getElementsByTagName("TD")[n];
+        y = rows[i + 1].getElementsByTagName("TD")[n];
+
+        if (directory === "ascending") {
+          if (n === 0) {
+            if (Number(x.innerHTML) > Number(y.innerHTML)) {
+              willSwitch = true;
+              break;
+            }
+          } else if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+            willSwitch = true;
+            break;
+          }
+        } else if (directory === "descending") {
+          if (n === 0) {
+            if (Number(x.innerHTML) < Number(y.innerHTML)) {
+              willSwitch = true;
+              break;
+            }
+          } else if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+            willSwitch = true;
+            break;
+          }
+        }
+      }
+      if (willSwitch) {
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+
+        switchCount++;
+      } else {
+        if (switchCount === 0 && directory === "ascending") {
+          directory = "descending";
+          switching = true;
+        }
+      }
+    }
+  };
+
+  const showEntry = (value) => {
+    const calcValue =
+      entryStart + value > getAllUsers.length
+        ? getAllUsers.length
+        : entryStart + value;
+    setEntryEnd(calcValue);
+    setEntriesPerPage(value);
+  };
+
+  const handleAddUser = () => {
+    navigate({ pathname: "/AddUser" });
+  };
+
+  const handlePageNumber = (entryNumber, value) => {
+    let entNumber = value - 1;
+
+    setEntryStart(entNumber * entriesPerPage);
+    setEntryEnd(
+      (entNumber + 1) * entriesPerPage < getAllUsers.length
+        ? (entNumber + 1) * entriesPerPage
+        : getAllUsers.length
+    );
+    setPage(value);
   };
 
   const getEmployee = () => {
     let c = [];
-    if (getAllMinisters.length > entriesPerPage) {
+    if (getAllUsers.length > entriesPerPage) {
       for (let i = entryStart; i < entryEnd; i++) {
         c[i] = showEmployee(i);
       }
     } else {
-      for (let i = 0; i < getAllMinisters.length; i++) {
+      for (let i = 0; i < getAllUsers.length; i++) {
         c[i] = showEmployee(i);
       }
     }
@@ -65,83 +175,60 @@ export default function Minister(props) {
   const showEmployee = (i) => {
     let Id = "";
     let Name = "";
-    let mobileNumber = "";
-    let Email = "";
     let createdDate = "";
-    let Status = "";
     try {
-      Id = getAllMinisters[i].id;
-      Name = getAllMinisters[i].firstname + " " + getAllMinisters[i].lastname;
-      mobileNumber = getAllMinisters[i].mobile_number;
-      Email = getAllMinisters[i].email;
-      createdDate = moment(getAllMinisters[i].created_at).format(
-        "DD/MM/YYYY HH:mm:ss a"
+      Id = getAllUsers[i].id;
+      Name = getAllUsers[i].language_name;
+      createdDate = moment(getAllUsers[i].created_at).format(
+        "DD/MM/YYYY"
       );
-      Status = getAllMinisters[i].status;
     } catch (error) {
       Id = "";
       Name = "";
-      mobileNumber = "";
-      Email = "";
       createdDate = "";
-      Status = "";
     }
     return (
       <tr>
         <td>{Id}</td>
         <td> {Name} </td>
-        <td> {mobileNumber} </td>
-        <td> {Email} </td>
         <td> {createdDate} </td>
-        <td> {Status} </td>
 
-        <td>
+        <td width="16%">
           <button
             type="button"
             class="btn btn-primary btn-sm"
             style={{
-              borderRadius: 25,
+              borderRadius: 15,
               backgroundColor: "#23aed2",
               justifyContent: "center",
               alignItems: "center",
             }}
-            onClick={() => {
-              handleViewPage(getAllMinisters[i]);
-            }}
+            onClick={handleShowEdit}
           >
             <i
-              className="fe-eye"
+              className="fe-edit"
               style={{ backgroundColor: "#22a6b3", color: "white" }}
             />
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            style={{
+              borderRadius: 15,
+              backgroundColor: "#ff7e24",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            // onClick={() => {
+            //   handleViewPage(getAllUsers[i]);
+            // }}
+          >
+            <i className="fe-trash-2" style={{ color: "white" }} />
           </button>
         </td>
       </tr>
     );
-  };
-
-  const showEntry = (value) => {
-    setEntryEnd(
-      entryStart + value > getAllMinisters.length
-        ? getAllMinisters.length
-        : entryStart + value
-    );
-    setEntriesPerPage(value);
-  };
-
-  const handleAddUser = () => {
-    navigate({ pathname: "/AddMinister" });
-  };
-
-  const handlePageNumber = (value) => {
-    let entNumber = value - 1;
-
-    setEntryStart(entNumber * entriesPerPage);
-    setEntryEnd(
-      (entNumber + 1) * entriesPerPage < getAllMinisters.length
-        ? (entNumber + 1) * entriesPerPage
-        : getAllMinisters.length
-    );
-    setPage(value);
   };
 
   const NextFun = () => {
@@ -152,7 +239,7 @@ export default function Minister(props) {
   }
 
   const handlePaging = () => {
-    let totalPages = getAllMinisters.length / entriesPerPage;
+    let totalPages = getAllUsers.length / entriesPerPage;
     let CheckFloatnumber =
       Number(totalPages) === totalPages && totalPages % 1 !== 0;
 
@@ -172,28 +259,6 @@ export default function Minister(props) {
         onChange={handlePageNumber}
       />
     );
-  };
-  const handleSearch = async (e) => {
-    var searchArr = [];
-    getMinisterTableData.map((item) => {
-      var id = `${item.id}`;
-      if (
-        (item.firstname &&
-          item.firstname
-            .toLowerCase()
-            .includes(e.target.value.toLowerCase())) ||
-        (item.lastname &&
-          item.lastname.toLowerCase().includes(e.target.value.toLowerCase())) ||
-        (item.mobile_number &&
-          item.mobile_number
-            .toLowerCase()
-            .includes(e.target.value.toLowerCase())) ||
-        (id && id.includes(e.target.value))
-      ) {
-        searchArr.push(item);
-      }
-    });
-    setAllMinisters(searchArr);
   };
 
   return (
@@ -231,7 +296,7 @@ export default function Minister(props) {
                           >
                             <div class="col-6 col-md-9 form-label">
                               <div class="grid-cont1ainer">
-                                <h5 class="mt-0">Ministers</h5>
+                                <h5 class="mt-0">Languages</h5>
                               </div>
                             </div>
                             <div
@@ -250,17 +315,18 @@ export default function Minister(props) {
                                     }}
                                   >
                                     <button
+                                      type="button"
                                       className="btn width-sm"
                                       style={{
                                         background: "#ff7e24",
                                         color: "#fff",
                                         borderRadius: 7,
-                                        width: 135,
+                                        width: 150,
                                         height: 35,
                                       }}
-                                      onClick={() => handleAddUser()}
+                                      onClick={handleShow}
                                     >
-                                      <i class="mdi mdi-plus"></i>Add Ministers
+                                      <i class="mdi mdi-plus"></i>Add Language
                                     </button>
                                     {/* { (isCheck.length > 1 && getAllUsers ) && <button
                                     onClick={() => handleMultipleDelete()}
@@ -277,6 +343,156 @@ export default function Minister(props) {
                                   >
                                     <i class="mdi mdi-delete"></i> Delete
                                   </button>} */}
+
+                                    <Modal
+                                      show={show}
+                                      // onHide={handleClose}
+                                      size="sm"
+                                      centered
+                                    >
+                                      <Modal.Title
+                                        style={{ marginLeft: "20px" }}
+                                      >
+                                        Add Language
+                                      </Modal.Title>
+                                      <Modal.Body>
+                                        <Form
+                                        // noValidate
+                                        // validated={validated}
+                                        // onSubmit={handleValidate}
+                                        >
+                                          <Row className="mb-2">
+                                            <Form.Group
+                                              as={Col}
+                                              md="12"
+                                              controlId="validationCustom01"
+                                            >
+                                              <Form.Control
+                                                required
+                                                type="text"
+                                                placeholder="Language Name"
+                                                // value={Firstname}
+                                                // onChange={(e) => setFirstName(e.target.value)}
+                                              />
+                                              <Form.Control.Feedback>
+                                                Looks good!
+                                              </Form.Control.Feedback>
+                                              <Form.Control.Feedback type="invalid">
+                                                Enter valid first name
+                                              </Form.Control.Feedback>
+                                            </Form.Group>
+                                          </Row>
+
+                                          <div
+                                            class="col-xl-14"
+                                            style={{ marginLeft: "80px" }}
+                                          >
+                                            <Button
+                                              variant="primary"
+                                              type="submit"
+                                              style={{
+                                                background: "#f47216",
+                                                color: "#fff",
+                                                borderRadius: 5,
+                                                // height: "38px",
+                                              }}
+                                            >
+                                              Submit
+                                            </Button>
+
+                                            <Button
+                                              variant="primary"
+                                              type="Cancel"
+                                              style={{
+                                                // background: "#f47216",
+                                                color: "Black",
+                                                borderRadius: 5,
+                                                // height: "38px",
+                                                marginLeft: "10px",
+                                              }}
+                                              onClick={() => setShow(false)}
+                                            >
+                                              Cancel
+                                            </Button>
+                                          </div>
+                                        </Form>
+                                      </Modal.Body>
+                                    </Modal>
+
+                                    <Modal
+                                      show={show1}
+                                      // onHide={handleClose}
+                                      size="sm"
+                                      centered
+                                    >
+                                      <Modal.Title
+                                        style={{ marginLeft: "20px" }}
+                                      >
+                                        Edit Language
+                                      </Modal.Title>
+                                      <Modal.Body>
+                                        <Form
+                                        // noValidate
+                                        // validated={validated}
+                                        // onSubmit={handleValidate}
+                                        >
+                                          <Row className="mb-2">
+                                            <Form.Group
+                                              as={Col}
+                                              md="12"
+                                              controlId="validationCustom01"
+                                            >
+                                              <Form.Control
+                                                required
+                                                type="text"
+                                                placeholder="Language Name"
+                                                // value={Firstname}
+                                                // onChange={(e) => setFirstName(e.target.value)}
+                                              />
+                                              <Form.Control.Feedback>
+                                                Looks good!
+                                              </Form.Control.Feedback>
+                                              <Form.Control.Feedback type="invalid">
+                                                Enter valid first name
+                                              </Form.Control.Feedback>
+                                            </Form.Group>
+                                          </Row>
+
+                                          <div
+                                            class="col-xl-14"
+                                            style={{ marginLeft: "80px" }}
+                                          >
+                                            <Button
+                                              variant="primary"
+                                              type="submit"
+                                              style={{
+                                                background: "#f47216",
+                                                color: "#fff",
+                                                borderRadius: 5,
+                                                // height: "38px",
+                                              }}
+                                            >
+                                              Submit
+                                            </Button>
+
+                                            <Button
+                                              variant="primary"
+                                              type="button"
+                                              style={{
+                                                // background: "#f47216",
+                                                color: "Black",
+                                                borderRadius: 5,
+                                                // height: "38px",
+                                                marginLeft: "10px",
+                                              }}
+                                              onClick={() => setShow1(false)}
+                                            >
+                                              Cancel
+                                            </Button>
+                                          </div>
+                                        </Form>
+                                      </Modal.Body>
+                                    </Modal>
 
                                     <div
                                       className="modal fade"
@@ -295,7 +511,7 @@ export default function Minister(props) {
                                               Import Users
                                             </h4>
 
-                                            <CSVLink
+                                            {/* <CSVLink
                                               data={getAllUsersExcelDownload}
                                               filename={"User List.csv"}
                                             >
@@ -307,7 +523,7 @@ export default function Minister(props) {
                                               >
                                                 Download sample file
                                               </button>
-                                            </CSVLink>
+                                            </CSVLink> */}
                                           </div>
 
                                           {/* <div className="modal-body">
@@ -405,104 +621,6 @@ export default function Minister(props) {
                                     </div>
                                   </div>
                                 </div>
-                                <div
-                                  class="col-3 col-md-2"
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "flex-end",
-                                    paddingRight: 0,
-                                  }}
-                                >
-                                  <div class="row">
-                                    <div className="dropdown float-end">
-                                      <a
-                                        href={false}
-                                        className="dropdown-toggle arrow-none card-drop"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                      ></a>
-                                      <div
-                                        className="dropdown-menu dropdown-menu-end"
-                                        style={{ cursor: "pointer" }}
-                                      >
-                                        {/* item*/}
-                                        <div
-                                          href="javascript:void(0);"
-                                          className="dropdown-item"
-                                          // onClick={() => handleFilter()}
-                                        >
-                                          Current month
-                                        </div>
-                                        {/* item*/}
-                                        <div
-                                          href="javascript:void(0);"
-                                          className="dropdown-item"
-                                          // onClick={() => handleLastMonthFilter()}
-                                        >
-                                          Last month
-                                        </div>
-                                        {/* item*/}
-                                        <div
-                                          href="javascript:void(0);"
-                                          className="dropdown-item"
-                                          // onClick={() => handleLast3MonthFilter()}
-                                        >
-                                          Last 3 month
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div
-                              class="col-lg-2"
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-end",
-                              }}
-                            >
-                              <div class="col-12 col-md-12">
-                                <div
-                                  class="grid-container"
-                                  style={{ padding: "0px 11px" }}
-                                >
-                                  <div class="row">
-                                    <div
-                                      style={{
-                                        border: "1px solid #dee2e6",
-                                        borderRadius: 3,
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        padding: 0,
-                                        margin: 0,
-                                      }}
-                                    >
-                                      <div
-                                        class="input-group input-group-merge"
-                                        style={{}}
-                                      >
-                                        <input
-                                          type="text"
-                                          class="form-control"
-                                          style={{
-                                            zIndex: 0,
-                                            height: "32px",
-                                            border: "0px solid #fff",
-                                          }}
-                                          placeholder="Search"
-                                          onChange={(e) => handleSearch(e)}
-                                        />
-                                        <div
-                                          class="input-group-text"
-                                          data-password="false"
-                                        >
-                                          {/* <span class="fas fa-search"></span> */}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
                               </div>
                             </div>
                           </div>
@@ -511,7 +629,7 @@ export default function Minister(props) {
                         <div className="table" style={{ fontSize: 11.5 }}>
                           <table
                             id="productTable"
-                            className="table table-hover "
+                            className="table table-hover"
                           >
                             <thead className="table">
                               <tr>
@@ -520,7 +638,7 @@ export default function Minister(props) {
                                     cursor: "pointer",
                                     padding: "0px 15px 0px 0px",
                                   }}
-                                  //   onClick={() => sortTable(0)}
+                                  onClick={() => sortTable(0)}
                                 >
                                   <div
                                     style={{
@@ -529,78 +647,35 @@ export default function Minister(props) {
                                       alignItems: "center",
                                     }}
                                   >
-                                    <div style={{ color: "black" }}>ID</div>
+                                    <div style={{ color: "black" }}>Sr</div>
                                   </div>
                                 </th>
-
+                                <th
+                                  style={{
+                                    cursor: "pointer",
+                                    padding: "0px 15px 0px 0px",
+                                  }}
+                                  onClick={() => sortTable(1)}
+                                >
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <div style={{ color: "black" }}>
+                                      Language Name
+                                    </div>
+                                  </div>
+                                </th>
                                 <th
                                   style={{
                                     cursor: "pointer",
                                     padding: 0,
                                     //   width: "7%",
                                   }}
-                                  // onClick={() => sortTable(1)}
-                                >
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <div style={{ color: "black" }}>
-                                      Minister Name
-                                    </div>
-                                    {/* <div> */}
-
-                                    {/* </div> */}
-                                  </div>
-                                </th>
-                                <th
-                                  style={{
-                                    cursor: "pointer",
-                                    padding: 0,
-                                    //   width: "10%",
-                                  }}
-                                  // onClick={() => sortTable(2)}
-                                >
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <div style={{ color: "black" }}>
-                                      Mobile Number
-                                    </div>
-                                  </div>
-                                </th>
-                                <th
-                                  style={{
-                                    cursor: "pointer",
-                                    padding: 0,
-                                    //   width: "10%",
-                                  }}
-                                  // onClick={() => sortTable(3)}
-                                >
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <div style={{ color: "black" }}>Email</div>
-                                  </div>
-                                </th>
-                                <th
-                                  style={{
-                                    cursor: "pointer",
-                                    padding: 0,
-                                    //   width: "9%",
-                                  }}
-                                  // onClick={() => sortTable(4)}
+                                  onClick={() => sortTable(2)}
                                 >
                                   <div
                                     style={{
@@ -612,24 +687,9 @@ export default function Minister(props) {
                                     <div style={{ color: "black" }}>
                                       Added on
                                     </div>
-                                  </div>
-                                </th>
-                                <th
-                                  style={{
-                                    cursor: "pointer",
-                                    padding: 0,
-                                    //   width: "20%",
-                                  }}
-                                  // onClick={() => sortTable(5)}
-                                >
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <div style={{ color: "black" }}>status</div>
+                                    {/* <div> */}
+
+                                    {/* </div> */}
                                   </div>
                                 </th>
 
@@ -637,9 +697,9 @@ export default function Minister(props) {
                                   style={{
                                     cursor: "pointer",
                                     padding: 0,
-                                    //   width: "10%",
+                                    // width: "1%",
                                   }}
-                                  // onClick={() => sortTable(7)}
+                                  onClick={() => sortTable(3)}
                                 >
                                   <div
                                     style={{
@@ -648,9 +708,7 @@ export default function Minister(props) {
                                       alignItems: "center",
                                     }}
                                   >
-                                    <div style={{ color: "black" }}>
-                                      Actions
-                                    </div>
+                                    <div style={{ color: "black" }}></div>
                                   </div>
                                 </th>
                               </tr>
@@ -680,14 +738,14 @@ export default function Minister(props) {
                       >
                         <div class="col-12 col-md-6">
                           <div style={{ fontSize: 13, fontWeight: 700 }}>
-                            {!getAllMinisters.length
+                            {!getAllUsers.length
                               ? "[Nothing to show]"
                               : "Showing  " +
                                 (entryStart + 1) +
                                 " to " +
                                 entryEnd +
                                 " of " +
-                                getAllMinisters.length +
+                                getAllUsers.length +
                                 " entries"}
                           </div>
                         </div>

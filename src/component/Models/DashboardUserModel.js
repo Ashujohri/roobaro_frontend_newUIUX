@@ -3,7 +3,6 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import Slide from "@mui/material/Slide";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-
 import Visit from "../../images/FiledVisits.png";
 import Jasdan from "../../images/Jasdan.png";
 import Mantralaya from "../../images/Mantralaya.png";
@@ -11,14 +10,23 @@ import Vidhansabha from "../../images/Vidhansabha.png";
 import Residence from "../../images/Residence.png";
 import PublicMeetings from "../../images/Publicmeetings.png";
 import { DialogContent, DialogTitle } from "@mui/material";
+import Swal from "sweetalert2";
+import moment from "moment";
+import { getDataAxios, postDataAxios } from "../Services/NodeServices";
+import { Trans } from "react-i18next";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function DashboardUserModel(props) {
+  var userData = JSON.parse(localStorage.getItem("userData"));
   const [open, setOpen] = React.useState(false);
   const [getLocation, setLocation] = React.useState("");
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -32,7 +40,7 @@ export default function DashboardUserModel(props) {
     {
       id: "1",
       iconName: "",
-      title: "Public meetings",
+      title: <Trans i18nKey="Public_Meetings"> Public meetings </Trans>,
       color: "#3786eb",
       backgroundColor: "#ecf4fe",
       img: PublicMeetings,
@@ -40,7 +48,7 @@ export default function DashboardUserModel(props) {
     {
       id: "2",
       iconName: "",
-      title: "Field Visits",
+      title: <Trans i18nKey="field_visits"> Field Visits </Trans>,
       color: "#f9aa4b",
       backgroundColor: "#fff6ec",
       img: Visit,
@@ -50,7 +58,7 @@ export default function DashboardUserModel(props) {
     {
       id: "3",
       iconName: "",
-      title: "Mantralaya",
+      title: <Trans i18nKey="Mantralaya"> Mantralaya </Trans>,
       color: "#f3747f",
       backgroundColor: "#fcdee0",
       img: Mantralaya,
@@ -58,7 +66,7 @@ export default function DashboardUserModel(props) {
     {
       id: "4",
       iconName: "",
-      title: "Vidhansabha",
+      title: <Trans i18nKey="Vidhansabha"> Vidhansabha </Trans>,
       color: "#18b797",
       backgroundColor: "#c5ede5",
       img: Vidhansabha,
@@ -68,7 +76,7 @@ export default function DashboardUserModel(props) {
     {
       id: "5",
       iconName: "",
-      title: "Jasdhan",
+      title: <Trans i18nKey="Jasdan"> Jasdhan </Trans>,
       color: "#d680e6",
       backgroundColor: "#f6d9ff",
       img: Jasdan,
@@ -76,17 +84,58 @@ export default function DashboardUserModel(props) {
     {
       id: "6",
       iconName: "",
-      title: "residence",
+      title: <Trans i18nKey="Residence"> Residence </Trans>,
       color: "#2fc2e1",
       backgroundColor: "#d5f3f9",
       img: Residence,
     },
   ];
-  //     useEffect(() => {
-  //         setTimeout(() => {
-  //             handleClickOpen();
-  //         }, 1500);
-  // }, [])
+
+  const fetchUserData = async () => {
+    try {
+      const result = await getDataAxios(`users/fetchUserDetail/${userData.id}`);
+      console.log(
+        "result in userDetail in VisitorAdd",
+        result.result[0].user_location
+      );
+      if (result.status === true) {
+        setLocation(result.result[0].user_location);
+      }
+    } catch (error) {
+      console.log("error in catch", error);
+    }
+  };
+
+  const handleSubmit = async (titleLocation) => {
+    console.log("titleLocation", titleLocation);
+    try {
+      let body = {
+        firstname: userData.firstname,
+        lastname: userData.lastname,
+        email: userData.email,
+        mobile_number: userData.mobile_number,
+        status: userData.status,
+        minister_id: userData.minister_id,
+        created_at: moment(userData.created_at).format("YYYY-MM-DD HH:mm:ss"),
+        role_id: userData.role_id,
+        language_id: userData.language_id ? userData.language_id : null,
+        user_address: userData.user_address,
+        user_organization: userData.user_organization,
+        user_location: titleLocation,
+        picture: userData.picture,
+        updated_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+      };
+      let result = await postDataAxios(`users/updateUser/${userData.id}`, body);
+      if (result.status === true) {
+        Swal.fire({ icon: "success", text: "Location select" });
+        handleClose();
+      } else {
+        Swal.fire({ icon: "error", text: result.message });
+      }
+    } catch (error) {
+      console.log("error in catch handleSubmit", error);
+    }
+  };
 
   return (
     <div>
@@ -96,8 +145,11 @@ export default function DashboardUserModel(props) {
         }}
         style={{ cursor: "pointer", color: "black", fontWeight: 550 }}
       >
-        {localStorage.setItem("location_type", JSON.stringify(getLocation))}
-        {getLocation != "" ? getLocation : "Office"}
+        {getLocation != ""
+          ? getLocation
+          : userData.user_location != ""
+          ? userData.user_location
+          : "Office"}
         <KeyboardArrowDownIcon />
       </span>
 
@@ -116,17 +168,15 @@ export default function DashboardUserModel(props) {
             id="alert-dialog-slide-description"
             style={{ padding: 0 }}
           >
-            {"On-Field"}
+            <Trans i18nKey="On_field"> On-Field </Trans>
           </DialogTitle>
           <div style={{ display: "flex", flexDirection: "row", padding: 5 }}>
             {data.map((item) => {
               return (
                 <Button
                   onClick={() => {
-                    props.setTitle(item.title);
-                    handleClickOpen();
-                    handleClose();
                     setLocation(item.title);
+                    handleSubmit(item.title);
                   }}
                   style={{
                     display: "flex",
@@ -178,7 +228,9 @@ export default function DashboardUserModel(props) {
             })}
           </div>
 
-          <DialogTitle style={{ padding: 0 }}>{"Office"}</DialogTitle>
+          <DialogTitle style={{ padding: 0 }}>
+            <Trans i18nKey="office"> Office </Trans>
+          </DialogTitle>
           <div style={{ padding: 5 }}>
             <div
               style={{
@@ -191,10 +243,8 @@ export default function DashboardUserModel(props) {
                 return (
                   <Button
                     onClick={() => {
-                      props.setTitle(item.title);
-                      handleClickOpen();
-                      handleClose();
                       setLocation(item.title);
+                      handleSubmit(item.title);
                     }}
                     style={{
                       display: "flex",
@@ -261,10 +311,8 @@ export default function DashboardUserModel(props) {
                 return (
                   <Button
                     onClick={() => {
-                      props.setTitle(item.title);
-                      handleClickOpen();
-                      handleClose();
                       setLocation(item.title);
+                      handleSubmit(item.title);
                     }}
                     style={{
                       display: "flex",

@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from "react";
-import backimg from "../../../images/background.png";
-// import '../index.css'
-
+import React, { useState } from "react";
+import backimg from "../../../images/bg.png";
 import { useNavigate } from "react-router-dom";
-import swal from "sweetalert";
-import { useLocation } from "react-router-dom";
 import { postDataAxios } from "../../Services/NodeServices";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
+import { Trans } from "react-i18next";
 
 export default function LoginWithMobile() {
   const navigate = useNavigate();
@@ -50,6 +47,7 @@ export default function LoginWithMobile() {
               scopes: result.scopes,
               token: result.token,
               status: result.status,
+              mobile: getMobile,
             },
           });
         }
@@ -65,7 +63,7 @@ export default function LoginWithMobile() {
         <div
           style={{
             backgroundImage: `url(${backimg})`,
-            backgroundSize: "contain",
+            backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
           }}
@@ -122,7 +120,12 @@ export default function LoginWithMobile() {
                             md="12"
                             controlId="validationCustom03"
                           >
-                            <Form.Label>Mobile Number</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Mobile_Number">
+                                {" "}
+                                Mobile Number{" "}
+                              </Trans>
+                            </Form.Label>
                             <Form.Control
                               required
                               type="text"
@@ -154,7 +157,7 @@ export default function LoginWithMobile() {
                             }}
                             type="submit"
                           >
-                            Login
+                            <Trans i18nKey="login"> Login </Trans>
                           </button>
                         </div>
                       </Form>

@@ -2,6 +2,7 @@ import React from "react";
 import Topbar from "../Header/Topbar";
 import ListItem from "../Dashboard/ListItem";
 import moment from "moment";
+import { Trans } from "react-i18next";
 
 export default function Profile(props) {
   const userData = props.item ?? JSON.parse(localStorage.getItem("userData"));
@@ -43,7 +44,7 @@ export default function Profile(props) {
                                       class="form-label"
                                       style={{ fontSize: 12, margin: 0 }}
                                     >
-                                      Name
+                                      <Trans i18nKey="Name"> Name </Trans>
                                     </label>
                                     <label
                                       for="simpleinput"
@@ -67,7 +68,7 @@ export default function Profile(props) {
                                       class="form-label"
                                       style={{ fontSize: 12, margin: 0 }}
                                     >
-                                      Email
+                                      <Trans i18nKey="Email"> Email </Trans>
                                     </label>
                                     <label
                                       for="simpleinput"
@@ -87,7 +88,10 @@ export default function Profile(props) {
                                       class="form-label"
                                       style={{ fontSize: 12, margin: 0 }}
                                     >
-                                      Mobile
+                                      <Trans i18nKey="Mobile_Number">
+                                        {" "}
+                                        Mobile Number{" "}
+                                      </Trans>
                                     </label>
                                     <label
                                       for="simpleinput"
@@ -109,7 +113,9 @@ export default function Profile(props) {
                                       class="form-label"
                                       style={{ fontSize: 12, margin: 0 }}
                                     >
-                                      Added
+                                      <Trans i18nKey="added_on">
+                                        Added On{" "}
+                                      </Trans>
                                     </label>
                                     <label
                                       for="simpleinput"
@@ -133,7 +139,7 @@ export default function Profile(props) {
                                       class="form-label"
                                       style={{ fontSize: 12, margin: 0 }}
                                     >
-                                      Status
+                                      <Trans i18nKey="Status"> Status </Trans>
                                     </label>
                                     <label
                                       for="simpleinput"
@@ -153,7 +159,7 @@ export default function Profile(props) {
                                       class="form-label"
                                       style={{ fontSize: 12, margin: 0 }}
                                     >
-                                      Address
+                                      <Trans i18nKey="Addres"> Address </Trans>
                                     </label>
                                     <label
                                       for="simpleinput"
@@ -175,7 +181,10 @@ export default function Profile(props) {
                                       class="form-label"
                                       style={{ fontSize: 12, margin: 0 }}
                                     >
-                                      Organization
+                                      <Trans i18nKey="Organization">
+                                        {" "}
+                                        Organization{" "}
+                                      </Trans>
                                     </label>
                                     <label
                                       for="simpleinput"

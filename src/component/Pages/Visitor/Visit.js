@@ -8,6 +8,7 @@ import Topbar from "../../Header/Topbar";
 import ListItem from "../../Dashboard/ListItem";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { Trans } from "react-i18next";
 
 const excelFormat = [
   "xlsx",
@@ -83,6 +84,10 @@ export default function Visit(props) {
       );
       // console.log("result in filter", result);
       if (result?.status === true) {
+        Swal.fire({
+          icon: "success",
+          text: `${result.result.length} Record found`,
+        });
         setAllVisits(result.result);
         setVistTableData(result.result);
         setAllUsersExcelDownload(result.ExcelData);
@@ -225,7 +230,7 @@ export default function Visit(props) {
       Name = getAllVisits[i].firstname + " " + getAllVisits[i].lastname;
       mobileNumber = getAllVisits[i].mobile_number;
       visitorType = getAllVisits[i].visitor_type;
-      VidhanSabhaName = getAllVisits[i].Vidhansabha;
+      VidhanSabhaName = getAllVisits[i].VidhansabhaName;
       CreatedDate = moment(getAllVisits[i].created_at).format(
         "DD/MM/YYYY HH:mm:ss a"
       );
@@ -289,10 +294,18 @@ export default function Visit(props) {
   };
 
   const NextFun = () => {
-    return <div>Next</div>;
+    return (
+      <div>
+        <Trans i18nKey="next"> Next </Trans>
+      </div>
+    );
   };
   function BackFun() {
-    return <div>Previous</div>;
+    return (
+      <div>
+        <Trans i18nKey="previous"> Previous </Trans>
+      </div>
+    );
   }
 
   const handlePaging = () => {
@@ -356,9 +369,12 @@ export default function Visit(props) {
                                 <div class="grid-cont1ainer">
                                   <h5
                                     class="mt-0"
-                                    style={{ color: "#000", fontWeight: 800 }}
+                                    style={{
+                                      color: "black",
+                                      fontWeight: "bold",
+                                    }}
                                   >
-                                    Visits
+                                    <Trans i18nKey="Visits"> Visits </Trans>
                                   </h5>
                                 </div>
                               </div>
@@ -389,8 +405,11 @@ export default function Visit(props) {
                                           }}
                                           onClick={() => handleAddVisit()}
                                         >
-                                          <i class="mdi mdi-plus"></i>Add
-                                          Visitor
+                                          <i class="mdi mdi-plus"></i>
+                                          <Trans i18nKey="Add_Visit">
+                                            {" "}
+                                            Add Visitor{" "}
+                                          </Trans>
                                         </button>
 
                                         {fetchLocal.includes("user_staff") ==
@@ -409,7 +428,10 @@ export default function Visit(props) {
                                                 marginLeft: 5,
                                               }}
                                             >
-                                              <i class="fe-download"></i> Export
+                                              <i class="fe-download"></i>{" "}
+                                              <Trans i18nKey="Export">
+                                                Export{" "}
+                                              </Trans>
                                             </button>
                                           </CSVLink>
                                         )}
@@ -436,7 +458,10 @@ export default function Visit(props) {
                                           fontWeight: 500,
                                         }}
                                       >
-                                        Show &nbsp;
+                                        <Trans i18nKey="Show">
+                                          {" "}
+                                          Show &nbsp;{" "}
+                                        </Trans>
                                         <select
                                           style={{
                                             borderColor: "#a2a2a2",
@@ -455,13 +480,19 @@ export default function Visit(props) {
                                           }
                                           className="select"
                                         >
-                                          show entries
+                                          <Trans i18nKey="show_entries">
+                                            {" "}
+                                            show entries{" "}
+                                          </Trans>
                                           <option value={10}>10</option>
                                           <option value={25}>25</option>
                                           <option value={50}>50</option>
                                           <option value={200}>200</option>
                                         </select>
-                                        &nbsp;Entries
+                                        <Trans i18nKey="entries">
+                                          {" "}
+                                          &nbsp;Entries{" "}
+                                        </Trans>
                                       </div>
                                     </div>
                                   </div>
@@ -495,7 +526,10 @@ export default function Visit(props) {
                                               class="mdi mdi-filter"
                                               style={{ color: "white" }}
                                             ></i>{" "}
-                                            Filter
+                                            <Trans i18nKey="filter">
+                                              {" "}
+                                              Filter{" "}
+                                            </Trans>
                                           </button>
                                         </a>
                                         <div
@@ -519,7 +553,10 @@ export default function Visit(props) {
                                               )
                                             }
                                           >
-                                            Current month
+                                            <Trans i18nKey="current_month">
+                                              {" "}
+                                              Current month{" "}
+                                            </Trans>
                                           </div>
                                           {/* item*/}
                                           <div
@@ -540,7 +577,10 @@ export default function Visit(props) {
                                               )
                                             }
                                           >
-                                            Last month
+                                            <Trans i18nKey="last_month">
+                                              {" "}
+                                              Last month{" "}
+                                            </Trans>
                                           </div>
                                           {/* item*/}
                                           <div
@@ -559,7 +599,10 @@ export default function Visit(props) {
                                               )
                                             }
                                           >
-                                            Last 3 month
+                                            <Trans i18nKey="last_3_month">
+                                              {" "}
+                                              Last 3 month{" "}
+                                            </Trans>
                                           </div>
                                         </div>
                                       </div>
@@ -641,7 +684,9 @@ export default function Visit(props) {
                                         alignItems: "center",
                                       }}
                                     >
-                                      <div>ID</div>
+                                      <div>
+                                        <Trans i18nKey="ID"> ID </Trans>
+                                      </div>
                                     </div>
                                   </th>
                                   <th
@@ -658,7 +703,7 @@ export default function Visit(props) {
                                         alignItems: "center",
                                       }}
                                     >
-                                      <div>Name</div>
+                                      <Trans i18nKey="Name"> Name </Trans>
                                       {/* <div> */}
 
                                       {/* </div> */}
@@ -678,7 +723,12 @@ export default function Visit(props) {
                                         alignItems: "center",
                                       }}
                                     >
-                                      <div>Mobile Number</div>
+                                      <div>
+                                        <Trans i18nKey="Mobile_Number">
+                                          {" "}
+                                          Mobile Number{" "}
+                                        </Trans>
+                                      </div>
                                     </div>
                                   </th>
                                   <th
@@ -695,7 +745,12 @@ export default function Visit(props) {
                                         alignItems: "center",
                                       }}
                                     >
-                                      <div>Visit type</div>
+                                      <div>
+                                        <Trans i18nKey="Visit_Type">
+                                          {" "}
+                                          Visit type{" "}
+                                        </Trans>
+                                      </div>
                                     </div>
                                   </th>
                                   <th
@@ -712,7 +767,12 @@ export default function Visit(props) {
                                         alignItems: "center",
                                       }}
                                     >
-                                      <div>Vidhansabha</div>
+                                      <div>
+                                        <Trans i18nKey="Vidhansabha">
+                                          {" "}
+                                          Vidhansabha{" "}
+                                        </Trans>
+                                      </div>
                                     </div>
                                   </th>
                                   <th
@@ -729,7 +789,12 @@ export default function Visit(props) {
                                         alignItems: "center",
                                       }}
                                     >
-                                      <div>Added on</div>
+                                      <div>
+                                        <Trans i18nKey="added_on">
+                                          {" "}
+                                          Added on
+                                        </Trans>
+                                      </div>
                                     </div>
                                   </th>
                                   <th
@@ -746,7 +811,12 @@ export default function Visit(props) {
                                         alignItems: "center",
                                       }}
                                     >
-                                      <div>Added by</div>
+                                      <div>
+                                        <Trans i18nKey="added_by">
+                                          {" "}
+                                          Added by{" "}
+                                        </Trans>
+                                      </div>
                                     </div>
                                   </th>
 
@@ -763,7 +833,9 @@ export default function Visit(props) {
                                         alignItems: "center",
                                       }}
                                     >
-                                      <div>Status</div>
+                                      <div>
+                                        <Trans i18nKey="Status"> Status </Trans>
+                                      </div>
                                     </div>
                                   </th>
                                   <th
@@ -780,7 +852,12 @@ export default function Visit(props) {
                                         alignItems: "center",
                                       }}
                                     >
-                                      <div>Actions</div>
+                                      <div>
+                                        <Trans i18nKey="action">
+                                          {" "}
+                                          Actions{" "}
+                                        </Trans>
+                                      </div>
                                     </div>
                                   </th>
                                 </tr>
@@ -794,7 +871,10 @@ export default function Visit(props) {
                                         textAlign: "center",
                                       }}
                                     >
-                                      No visit yet..!
+                                      <Trans i18nKey="No_visitor_yet">
+                                        {" "}
+                                        No visitor yet..!{" "}
+                                      </Trans>
                                     </p>
                                   </td>
                                 ) : (

@@ -8,6 +8,8 @@ import Topbar from "../../Header/Topbar";
 import ListItem from "../../Dashboard/ListItem";
 import swal from "sweetalert";
 import moment from "moment";
+import Swal from "sweetalert2";
+import { Trans } from "react-i18next";
 
 export default function User(props) {
   const navigate = useNavigate();
@@ -49,8 +51,11 @@ export default function User(props) {
       let result = await getDataAxios(
         `users/displayFilterUser/${UserData.minister_id}/${startDate}/${endDate}`
       );
-      // console.log("result in user filter", result);
       if (result?.status === true) {
+        Swal.fire({
+          icon: "success",
+          text: `${result.result.length} Record found`,
+        });
         setAllUsers(result.result);
         setUserTableData(result.result);
       } else {
@@ -247,10 +252,18 @@ export default function User(props) {
   };
 
   const NextFun = () => {
-    return <div>Next</div>;
+    return (
+      <div>
+        <Trans i18nKey="next"> Next </Trans>
+      </div>
+    );
   };
   function BackFun() {
-    return <div>Previous</div>;
+    return (
+      <div>
+        <Trans i18nKey="previous"> Previous </Trans>
+      </div>
+    );
   }
 
   const handlePaging = () => {
@@ -311,7 +324,9 @@ export default function User(props) {
                           >
                             <div class="col-6 col-md-9 form-label">
                               <div class="grid-cont1ainer">
-                                <h5 class="mt-0">User</h5>
+                                <h5 class="mt-0">
+                                  <Trans i18nKey="User"> User </Trans>
+                                </h5>
                               </div>
                             </div>
                             <div
@@ -340,7 +355,11 @@ export default function User(props) {
                                       }}
                                       onClick={() => handleAddUser()}
                                     >
-                                      <i class="mdi mdi-plus"></i>Add Users
+                                      <i class="mdi mdi-plus"></i>
+                                      <Trans i18nKey="Add_Users">
+                                        {" "}
+                                        Add Users{" "}
+                                      </Trans>
                                     </button>
 
                                     <div
@@ -397,7 +416,10 @@ export default function User(props) {
                                     <div
                                       style={{ fontSize: 13, fontWeight: 500 }}
                                     >
-                                      Show &nbsp;
+                                      <Trans i18nKey="Show">
+                                        {" "}
+                                        Show &nbsp;{" "}
+                                      </Trans>
                                       <select
                                         style={{
                                           borderColor: "#a2a2a2",
@@ -416,13 +438,19 @@ export default function User(props) {
                                         }
                                         className="select"
                                       >
-                                        show entries
+                                        <Trans i18nKey="show_entries">
+                                          {" "}
+                                          show entries{" "}
+                                        </Trans>
                                         <option value={10}>10</option>
                                         <option value={25}>25</option>
                                         <option value={50}>50</option>
                                         <option value={200}>200</option>
                                       </select>
-                                      &nbsp;Entries
+                                      <Trans i18nKey="entries">
+                                        {" "}
+                                        &nbsp;Entries{" "}
+                                      </Trans>
                                     </div>
                                   </div>
                                 </div>
@@ -456,7 +484,10 @@ export default function User(props) {
                                             class="mdi mdi-filter"
                                             style={{ color: "white" }}
                                           ></i>{" "}
-                                          Filter
+                                          <Trans i18nKey="filter">
+                                            {" "}
+                                            Filter{" "}
+                                          </Trans>
                                         </button>
                                       </a>
                                       <div
@@ -478,7 +509,10 @@ export default function User(props) {
                                             )
                                           }
                                         >
-                                          Current month
+                                          <Trans i18nKey="current_month">
+                                            {" "}
+                                            Current month{" "}
+                                          </Trans>
                                         </div>
                                         {/* item*/}
                                         <div
@@ -497,7 +531,10 @@ export default function User(props) {
                                             )
                                           }
                                         >
-                                          Last month
+                                          <Trans i18nKey="last_month">
+                                            {" "}
+                                            Last month{" "}
+                                          </Trans>
                                         </div>
                                         {/* item*/}
                                         <div
@@ -514,7 +551,10 @@ export default function User(props) {
                                             )
                                           }
                                         >
-                                          Last 3 month
+                                          <Trans i18nKey="last_3_month">
+                                            {" "}
+                                            Last 3 month{" "}
+                                          </Trans>
                                         </div>
                                       </div>
                                     </div>
@@ -596,7 +636,9 @@ export default function User(props) {
                                       alignItems: "center",
                                     }}
                                   >
-                                    <div style={{ color: "black" }}>ID</div>
+                                    <div style={{ color: "black" }}>
+                                      <Trans i18nKey="ID"> ID </Trans>
+                                    </div>
                                   </div>
                                 </th>
                                 <th
@@ -614,7 +656,10 @@ export default function User(props) {
                                     }}
                                   >
                                     <div style={{ color: "black" }}>
-                                      User Name
+                                      <Trans i18nKey="User_Name">
+                                        {" "}
+                                        User Name{" "}
+                                      </Trans>
                                     </div>
                                   </div>
                                 </th>
@@ -634,7 +679,10 @@ export default function User(props) {
                                     }}
                                   >
                                     <div style={{ color: "black" }}>
-                                      Minister Name
+                                      <Trans i18nKey="Minister_Name">
+                                        {" "}
+                                        Minister Name{" "}
+                                      </Trans>
                                     </div>
                                     {/* <div> */}
 
@@ -657,7 +705,10 @@ export default function User(props) {
                                     }}
                                   >
                                     <div style={{ color: "black" }}>
-                                      Mobile Number
+                                      <Trans i18nKey="Mobile_Number">
+                                        {" "}
+                                        Mobile Number{" "}
+                                      </Trans>
                                     </div>
                                   </div>
                                 </th>
@@ -676,7 +727,9 @@ export default function User(props) {
                                       alignItems: "center",
                                     }}
                                   >
-                                    <div style={{ color: "black" }}>Email</div>
+                                    <div style={{ color: "black" }}>
+                                      <Trans i18nKey="Email"> Email </Trans>
+                                    </div>
                                   </div>
                                 </th>
                                 <th
@@ -695,7 +748,10 @@ export default function User(props) {
                                     }}
                                   >
                                     <div style={{ color: "black" }}>
-                                      Added on
+                                      <Trans i18nKey="added_on">
+                                        {" "}
+                                        Added on
+                                      </Trans>
                                     </div>
                                   </div>
                                 </th>
@@ -715,7 +771,10 @@ export default function User(props) {
                                     }}
                                   >
                                     <div style={{ color: "black" }}>
-                                      Last activity
+                                      <Trans i18nKey="Last_activity">
+                                        {" "}
+                                        Last activity{" "}
+                                      </Trans>
                                     </div>
                                   </div>
                                 </th>
@@ -736,7 +795,7 @@ export default function User(props) {
                                     }}
                                   >
                                     <div style={{ color: "black" }}>
-                                      Actions
+                                      <Trans i18nKey="action"> Actions </Trans>
                                     </div>
                                   </div>
                                 </th>
@@ -751,7 +810,10 @@ export default function User(props) {
                                       textAlign: "center",
                                     }}
                                   >
-                                    No user yet..!
+                                    <Trans i18nKey="No_user_yet">
+                                      {" "}
+                                      No user yet..!{" "}
+                                    </Trans>
                                   </p>
                                 </td>
                               ) : (

@@ -7,6 +7,7 @@ import {
 import "react-circular-progressbar/dist/styles.css";
 import Swal from "sweetalert2";
 import moment from "moment";
+import { Trans } from "react-i18next";
 
 export default function AdminEngageProgressBar(props) {
   var UserData = JSON.parse(localStorage.getItem("userData"));
@@ -184,7 +185,7 @@ export default function AdminEngageProgressBar(props) {
         }}
       >
         <div
-          class="col-8"
+          class="col-7"
           style={{
             display: "flex",
             // fontFamily: "Poppins",
@@ -192,23 +193,23 @@ export default function AdminEngageProgressBar(props) {
             fontWeight: "bold",
           }}
         >
-          Total Engagement Time
+          <Trans i18nKey="Total_Engagement_Time"> Total Engagement Time </Trans>
         </div>
         <div
-          className="col-4"
+          className="col-5"
           style={{ display: "flex", justifyContent: "flex-end" }}
         >
           <button
-            className="btn btn-sm waves-effect waves-light"
+            className="btn btn waves-effect waves-light"
             style={{
               background: "#ff7e24",
               color: "#fff",
               borderRadius: 15,
-              height: "30px",
+              // height: "30px",
             }}
             onClick={() => handleEngageFilter()}
           >
-            Apply
+            <Trans i18nKey="Apply"> Apply </Trans>
           </button>
         </div>
       </div>
@@ -243,7 +244,8 @@ export default function AdminEngageProgressBar(props) {
               {convertFuncEngage(parseFloat(getEngageTime))}
             </div>
             <div style={{ fontSize: 10 }}>
-              {getTotalEngageVisitor} total visitors
+              {getTotalEngageVisitor}{" "}
+              <Trans i18nKey="Total_Visitors"> total visitors </Trans>
             </div>
           </div>
         </CircularProgressbarWithChildren>

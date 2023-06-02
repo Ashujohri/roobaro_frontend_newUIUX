@@ -1,24 +1,13 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import OTPInput, { ResendOTP } from "otp-input-react";
 
 export default function OtpModel(props) {
-  //  alert(OTP)
-
   const handleClose = () => {
     props.setOpen(true);
   };
-  // const handleClick = () =>{
-  //   if(props.otp==OTP){
-
-  //   }else{
-
-  //   }
-  // }
 
   return (
     <div>
@@ -29,10 +18,6 @@ export default function OtpModel(props) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style} onClick={handleClose}>
-          {/* <div style={{marginTop:10,display:'flex',justifyContent:'center',alignItems:'center'}}>
-
-      
-                   </div> */}
           <div className="text-right">
             <h4
               className="text-uppercase mt-0"
@@ -119,5 +104,4 @@ const style = {
 
   boxShadow: 24,
   p: 3,
-  // borderRadius: 30;
 };

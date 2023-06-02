@@ -29,9 +29,9 @@ const getDataAxios = async (Url) => {
         showConfirmButton: false,
         timer: 30000,
       });
-      localStorage.clear();
-      localStorage.removeItem("adminInfo");
       localStorage.removeItem("token");
+      localStorage.removeItem("roleName");
+      localStorage.removeItem("userData");
       setTimeout(() => window.location.replace("/AdminLogin"), 2000);
     } else {
       console.log(error);
@@ -64,9 +64,9 @@ const postDataAxios = async (Url, body) => {
         showConfirmButton: false,
         timer: 30000,
       });
-      localStorage.removeItem("adminInfo");
       localStorage.removeItem("token");
-      localStorage.clear();
+      localStorage.removeItem("roleName");
+      localStorage.removeItem("userData");
       setTimeout(() => window.location.replace("/AdminLogin"), 2000);
     } else {
       console.log(error);
@@ -97,9 +97,9 @@ const putDataAxios = async (Url, body) => {
         showConfirmButton: false,
         timer: 30000,
       });
-      localStorage.clear();
-      localStorage.removeItem("adminInfo");
       localStorage.removeItem("token");
+      localStorage.removeItem("roleName");
+      localStorage.removeItem("userData");
       setTimeout(() => window.location.replace("/AdminLogin"), 2000);
     } else {
       console.log(error);
@@ -132,8 +132,9 @@ const postDataAndImageAxios = async (Url, body) => {
         timer: 30000,
       });
       // localStorage.clear();
-      localStorage.removeItem("adminInfo");
       localStorage.removeItem("token");
+      localStorage.removeItem("roleName");
+      localStorage.removeItem("userData");
       setTimeout(() => window.location.replace("/AdminLogin"), 2000);
     } else {
       console.log(error);
@@ -166,8 +167,9 @@ const putDataAndImageAxios = async (Url, body) => {
         timer: 30000,
       });
       // localStorage.clear();
-      localStorage.removeItem("adminInfo");
       localStorage.removeItem("token");
+      localStorage.removeItem("roleName");
+      localStorage.removeItem("userData");
       setTimeout(() => window.location.replace("/AdminLogin"), 2000);
     } else {
       console.log(error);

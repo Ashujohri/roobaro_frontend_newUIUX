@@ -5,18 +5,22 @@ import LoginWithEmail from "./component/Pages/LoginWithEmail/loginWithEmail";
 import Reset from "./component/Pages/LoginWithEmail/ForgotPasswordEmail";
 import MobileVerify from "./component/Pages/LoginWithMobile/MobileVerify";
 import LoginWithMobile from "./component/Pages/LoginWithMobile/LoginWithMobile";
-// import DashboardUser from "./component/Dashboard/DashboardUser";
 import UserView from "./component/Pages/User/UserView";
-import ListItem from "./component/Dashboard/ListItem";
 import User from "./component/Pages/User/User";
 import AddUser from "./component/Pages/User/AddUser";
 import Visit from "./component/Pages/Visitor/Visit";
 import AddVisitor from "./component/Pages/Visitor/AddVisitor";
 import VisitDetails from "./component/Pages/Visitor/VisitDetails";
-import Minister from './component/Pages/Minister/Minister'
-import AddMinister from './component/Pages/Minister/AddMinister'
+import Minister from "./component/Pages/Minister/Minister";
+import AddMinister from "./component/Pages/Minister/AddMinister";
 import Profile from "./component/Pages/Profile";
-// import Dashboard360 from "./component/Dashboard/DashboardAdmin";
+import Languages from "./component/Pages/Localization/Languages";
+import LabelTranslation from "./component/Pages/Localization/LabelTranslation";
+import Label from "./component/Pages/Localization/Label";
+import EditLabel from "./component/Pages/Localization/EditLabel";
+import AddLabel from "./component/Pages/Localization/AddLabel";
+import LanguageURL from "./component/Pages/Localization/LanguageURL";
+import UserDashVisitor from "./component/Pages/UserDashboardVisitorPage/UserDashVisitor";
 
 export default function AdminRouter(props) {
   return (
@@ -32,16 +36,19 @@ export default function AdminRouter(props) {
           <Route element={<User />} path="/users" />
           <Route element={<AddUser />} path="/AddUser" />
           <Route element={<UserView />} path="/UserDetailView" />
-          <Route element={<Minister/>} path="/minister" />
+          <Route element={<Minister />} path="/minister" />
           <Route element={<AddMinister />} path="/AddMinister" />
           <Route element={<Visit />} path="/visitors" />
           <Route element={<AddVisitor />} path="/AddVisitor" />
           <Route element={<VisitDetails />} path="/VisitorDetailView" />
           <Route element={<Profile />} path="/myprofile" />
-
-          {/* <Route element={<DashboardUser />} path="/DashboardUser" /> */}
-          {/* <Route element={<Dashboard360 />} path="/DashboardAdmin" /> */}
-          {/* <Route element={<SentMail />} path="/SentMail" /> */}
+          <Route element={<Languages />} path="/languages" />
+          <Route element={<LabelTranslation />} path="/labelTranslation" />
+          <Route element={<Label />} path="/AllLabels" />
+          <Route element={<EditLabel />} path="/EditLabel" />
+          <Route element={<AddLabel />} path="/AddLabel" />
+          <Route element={<LanguageURL />} path="/getAllURLs" />
+          <Route element={<UserDashVisitor />} path="/userDashVisitor" />
         </Routes>
       </Router>
     </>

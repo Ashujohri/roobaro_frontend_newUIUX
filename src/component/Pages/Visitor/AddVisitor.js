@@ -12,9 +12,11 @@ import OtpModel from "../../Models/OtpModel";
 import Topbar from "../../Header/Topbar";
 import ListItem from "../../Dashboard/ListItem";
 import { useNavigate } from "react-router-dom";
+import { Trans } from "react-i18next";
 
 export default function AddVisitor(props) {
   var UserData = JSON.parse(localStorage.getItem("userData"));
+  var fetchLocal = JSON.parse(localStorage.getItem("roleName"));
   const navigate = useNavigate();
   const [Firstname, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
@@ -25,7 +27,7 @@ export default function AddVisitor(props) {
   const [vidhanSabha, setVidhanSabha] = useState("");
   const [constituency, setConstituency] = useState("");
   const [mantralaya, setMantralaya] = useState("");
-  const [visitType, setVisitType] = useState("");
+  const [visitType, setVisitType] = useState("Single");
   const [refrence, setReference] = useState("");
   const [reasonVisit, setReasonVisit] = useState("");
   const [getMinisterId, setMinisterId] = useState("");
@@ -41,14 +43,16 @@ export default function AddVisitor(props) {
   const webcamRef = React.useRef(null);
   const [showModal, setShowModal] = useState(false);
   const [showCam, setShowCam] = useState(true);
-  const [otp, setOtp] = useState("");
-  const [OTP, setOTP] = useState("");
+  const [getOTP, setOTP] = useState("");
+  const [getInputOTP, setgetInputOTP] = useState("");
   const [getLocationType, setLocationType] = useState(
     JSON.parse(localStorage.getItem("location_type"))
   );
   const [getMinister, setMinister] = useState([]);
   const [error, setError] = useState(false);
   const [getShowName, setShowName] = useState("Add Visitor");
+  const [userdefault, setUserDefault] = useState("");
+  const [names, setNames] = useState([userdefault]);
 
   const videoConstraints = {
     width: 200,
@@ -83,6 +87,7 @@ export default function AddVisitor(props) {
     fetchAllVidhansabha();
     fetchAllConstituency();
     fetchAllMantralaya();
+    fetchUserData();
   }, []);
 
   const chkToken = async () => {
@@ -91,6 +96,17 @@ export default function AddVisitor(props) {
       navigate("/AdminLogin", { replace: true });
     } else {
       navigate("/AddVisitor", { replace: true });
+    }
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const result = await getDataAxios(`users/fetchUserDetail/${UserData.id}`);
+      if (result.status === true) {
+        setLocationType(result.result[0].user_location);
+      }
+    } catch (error) {
+      console.log("error in catch", error);
     }
   };
 
@@ -188,14 +204,24 @@ export default function AddVisitor(props) {
   };
 
   const handleOtp = async () => {
-    var otp = parseInt(Math.random() * 8999) + 1000;
-    // alert(otp);
-    setOtp(otp);
+    try {
+      var otp = parseInt(Math.random() * 8999) + 1000;
+      let response = await postDataAxios("users/LoginSendOTP", {
+        mobile: Mobile,
+        otp: otp,
+      });
+      setOTP(otp);
+      if (response.status === true) {
+        Swal.fire({ icon: "success", text: "Re-send OTP" });
+      }
+    } catch (error) {
+      console.log("error in resend", error);
+    }
   };
-  
+
   const handleData = async () => {
     try {
-      if (parseInt("9999") === parseInt(OTP)) {
+      if (parseInt(getOTP) === parseInt(getInputOTP)) {
         let body = {
           firstname: Firstname,
           lastname: LastName,
@@ -206,15 +232,15 @@ export default function AddVisitor(props) {
           visitor_type: visitType,
           vidhansabha_id: vidhanSabha,
           mantralya_id: mantralaya,
-          refrence: refrence,
+          refernce: refrence,
           reason_to_visit: reasonVisit.toString(),
           picture: picture,
           user_id: UserData.id,
           created_at: moment().format("YYYY-MM-DD HH:mm:ss"),
           minister_id: getMinisterId,
-          group_member: "Sachin",
+          group_member: names.toString(),
           visitor_status: "ongoing",
-          location_type: getLocationType ? getLocationType : "Office",
+          location_type: getLocationType,
           constituency_id: constituency,
         };
 
@@ -226,7 +252,10 @@ export default function AddVisitor(props) {
             title: "Done",
             text: "Visitor Added Successfully",
           });
-          navigate({ pathname: "/visitors" });
+          fetchLocal.includes("super_admin") === true ||
+          fetchLocal.includes("minister") === true
+            ? navigate("/visitors", { replace: true })
+            : navigate("/userDashVisitor", { replace: true });
         } else {
           setShowModal(false);
           Swal.fire({
@@ -236,12 +265,40 @@ export default function AddVisitor(props) {
           });
         }
       } else {
-        setError("Please Enter Otp");
+        Swal.fire({
+          icon: "error",
+          text: "Invalid OTP",
+        });
       }
     } catch (error) {
       console.log("error in cath add visitor 🔥", error);
     }
   };
+
+  const handleAdd = () => {
+    const data = [...names, []];
+    setNames(data);
+  };
+
+  const handleChange = (onchangevalue, i) => {
+    const inputdata = [...names];
+    inputdata[i] = onchangevalue.target.value;
+    setNames(inputdata);
+  };
+
+  const handleDelete = (i) => {
+    const deletename = [...names];
+    deletename.splice(i, 1);
+    setNames(deletename);
+  };
+
+  const handleVisitType = (e) => {
+    setVisitType(e.target.value);
+    setNames([userdefault]);
+    setFirstName("");
+    setLastName("");
+  };
+
   return (
     <>
       <div id="wrapper">
@@ -254,7 +311,7 @@ export default function AddVisitor(props) {
                 <div class="card" style={{ borderRadius: 20 }}>
                   <div class="card-body ">
                     <b style={{ fontWeight: 500, color: "#000", fontSize: 18 }}>
-                      Add Visitors
+                      <Trans i18nKey="Add_Visit"> Add Visitors </Trans>
                     </b>
                     <div
                       style={{
@@ -272,53 +329,249 @@ export default function AddVisitor(props) {
                         <Row className="mb-2">
                           <Form.Group
                             as={Col}
-                            md="6"
-                            controlId="validationCustom01"
+                            md="12"
+                            controlId="validationCustom04"
                           >
-                            <Form.Label>First name</Form.Label>
-                            <Form.Control
+                            <Form.Label>
+                              <Trans i18nKey="Visit_Type"> Visit type </Trans>
+                            </Form.Label>
+                            <Form.Select
+                              aria-label="Default select example"
+                              onChange={(e) => handleVisitType(e)}
+                              value={visitType}
                               required
-                              type="text"
-                              value={Firstname}
-                              placeholder="Firstname"
-                              onChange={(e) => setFirstName(e.target.value)}
-                            />
+                            >
+                              <option selected>Select visit type</option>
+                              <option value="Single">Single</option>
+                              <option value="Group">Group</option>
+                            </Form.Select>
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Enter valid first name
-                            </Form.Control.Feedback>
-                          </Form.Group>
-
-                          <Form.Group
-                            as={Col}
-                            md="6"
-                            controlId="validationCustom02"
-                          >
-                            <Form.Label>Last name</Form.Label>
-                            <Form.Control
-                              placeholder="Lastname"
-                              required
-                              type="text"
-                              value={LastName}
-                              onChange={(e) => setLastName(e.target.value)}
-                            />
-                            <Form.Control.Feedback>
-                              Looks good!
-                            </Form.Control.Feedback>
-                            <Form.Control.Feedback type="invalid">
-                              Enter valid last name
+                              <Trans i18nKey="Select_visitor_type">
+                                {" "}
+                                Select Visit Type{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
+                        {visitType === "Single" ? (
+                          <Row className="mb-2">
+                            <Form.Group
+                              as={Col}
+                              md="6"
+                              controlId="validationCustom01"
+                            >
+                              <Form.Label>
+                                <Trans i18nKey="First_Name"> First name </Trans>
+                              </Form.Label>
+                              <Form.Control
+                                required
+                                type="text"
+                                value={Firstname}
+                                placeholder="Firstname"
+                                onChange={(e) => setFirstName(e.target.value)}
+                              />
+                              <Form.Control.Feedback>
+                                <Trans i18nKey="look_good"> Looks good! </Trans>
+                              </Form.Control.Feedback>
+                              <Form.Control.Feedback type="invalid">
+                                <Trans i18nKey="Enter_valid_first_name">
+                                  {" "}
+                                  Enter valid first name{" "}
+                                </Trans>
+                              </Form.Control.Feedback>
+                            </Form.Group>
+
+                            <Form.Group
+                              as={Col}
+                              md="6"
+                              controlId="validationCustom02"
+                            >
+                              <Form.Label>
+                                <Trans i18nKey="Last_Name"> Last name </Trans>
+                              </Form.Label>
+                              <Form.Control
+                                placeholder="Lastname"
+                                required
+                                type="text"
+                                value={LastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                              />
+                              <Form.Control.Feedback>
+                                <Trans i18nKey="look_good"> Looks good! </Trans>
+                              </Form.Control.Feedback>
+                              <Form.Control.Feedback type="invalid">
+                                <Trans i18nKey="Enter_valid_last_name">
+                                  {" "}
+                                  Enter valid last name{" "}
+                                </Trans>
+                              </Form.Control.Feedback>
+                            </Form.Group>
+                          </Row>
+                        ) : (
+                          <>
+                            <Row className="mb-2">
+                              <Form.Group
+                                as={Col}
+                                md="6"
+                                controlId="validationCustom01"
+                              >
+                                <Form.Label>
+                                  <Trans i18nKey="First_Name">
+                                    {" "}
+                                    First name{" "}
+                                  </Trans>
+                                </Form.Label>
+                                <Form.Control
+                                  required
+                                  type="text"
+                                  value={Firstname}
+                                  placeholder="Firstname"
+                                  onChange={(e) => setFirstName(e.target.value)}
+                                />
+                                <Form.Control.Feedback>
+                                  <Trans i18nKey="look_good">
+                                    {" "}
+                                    Looks good!{" "}
+                                  </Trans>
+                                </Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">
+                                  <Trans i18nKey="Enter_valid_first_name">
+                                    {" "}
+                                    Enter valid first name{" "}
+                                  </Trans>
+                                </Form.Control.Feedback>
+                              </Form.Group>
+
+                              <Form.Group
+                                as={Col}
+                                md="6"
+                                controlId="validationCustom02"
+                              >
+                                <Form.Label>
+                                  <Trans i18nKey="Last_Name"> Last name </Trans>
+                                </Form.Label>
+                                <Form.Control
+                                  placeholder="Lastname"
+                                  required
+                                  type="text"
+                                  value={LastName}
+                                  onChange={(e) => setLastName(e.target.value)}
+                                />
+                                <Form.Control.Feedback>
+                                  <Trans i18nKey="look_good">
+                                    {" "}
+                                    Looks good!{" "}
+                                  </Trans>
+                                </Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">
+                                  <Trans i18nKey="Enter_valid_last_name">
+                                    {" "}
+                                    Enter valid last name{" "}
+                                  </Trans>
+                                </Form.Control.Feedback>
+                              </Form.Group>
+                            </Row>
+                            {names.map((item, index) => {
+                              return (
+                                <Row
+                                  className="mb-2"
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "flex-end",
+                                  }}
+                                >
+                                  <Form.Group
+                                    as={Col}
+                                    md="6"
+                                    controlId="validationCustom01"
+                                  >
+                                    <Form.Label>
+                                      <Trans i18nKey="group_member_name">
+                                        {" "}
+                                        Group member name{" "}
+                                      </Trans>
+                                    </Form.Label>
+                                    <Form.Control
+                                      required
+                                      type="text"
+                                      value={item}
+                                      placeholder="Group member name"
+                                      onChange={(e) => handleChange(e, index)}
+                                    />
+                                    <Form.Control.Feedback>
+                                      <Trans i18nKey="look_good">
+                                        {" "}
+                                        Looks good!{" "}
+                                      </Trans>
+                                    </Form.Control.Feedback>
+                                    <Form.Control.Feedback type="invalid">
+                                      <Trans i18nKey="Enter_valid_name">
+                                        {" "}
+                                        Enter valid name{" "}
+                                      </Trans>
+                                    </Form.Control.Feedback>
+                                  </Form.Group>
+                                  <Form.Group
+                                    as={Col}
+                                    md="4"
+                                    controlId="validationCustom01"
+                                  >
+                                    {index === 0 ? (
+                                      names.length === 9 ? (
+                                        <button
+                                          disabled
+                                          className="btn btn-primary"
+                                          style={{
+                                            borderRadius: 12,
+                                          }}
+                                        >
+                                          <i className="fe-plus-circle">
+                                            <Trans i18nKey="Add"> Add </Trans>
+                                          </i>
+                                        </button>
+                                      ) : (
+                                        <i
+                                          style={{
+                                            borderRadius: 12,
+                                          }}
+                                          className="fe-plus-circle btn btn-primary"
+                                          onClick={() => handleAdd()}
+                                        >
+                                          <Trans i18nKey="Add"> Add </Trans>
+                                        </i>
+                                      )
+                                    ) : (
+                                      <i
+                                        style={{ borderRadius: 12 }}
+                                        className="fe-minus-circle btn btn-danger"
+                                        onClick={() => handleDelete(index)}
+                                      >
+                                        <Trans i18nKey="Delete"> Delete </Trans>
+                                      </i>
+                                    )}
+                                  </Form.Group>
+                                </Row>
+                              );
+                            })}
+                          </>
+                        )}
+
                         <Row className="mb-2">
                           <Form.Group
                             as={Col}
                             md="6"
                             controlId="validationCustom01"
                           >
-                            <Form.Label>Mobile Number</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Mobile_Number">
+                                {" "}
+                                Mobile number{" "}
+                              </Trans>
+                            </Form.Label>
                             <Form.Control
                               required
                               placeholder="Mobile Number"
@@ -329,10 +582,13 @@ export default function AddVisitor(props) {
                               pattern="[6-9]{1}[0-9]{9}"
                             />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Enter valid mobile number
+                              <Trans i18nKey="Enter_valid_mobile_number">
+                                {" "}
+                                Enter valid mobile number{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
 
@@ -341,7 +597,12 @@ export default function AddVisitor(props) {
                             md="6"
                             controlId="validationCustom05"
                           >
-                            <Form.Label>Date of birth</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Date_of_birth">
+                                {" "}
+                                Date of birth{" "}
+                              </Trans>
+                            </Form.Label>
                             <Form.Control
                               required
                               type="date"
@@ -351,17 +612,22 @@ export default function AddVisitor(props) {
                               }}
                             />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Please pick a valid date
+                              <Trans i18nKey="Please_pick_a_valid_date">
+                                {" "}
+                                Please pick a valid date{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
 
                         <Row className="mb-2">
                           <Form.Group as={Col} md="6">
-                            <div style={{ marginBottom: 12 }}>Gender</div>
+                            <Form.Label>
+                              <Trans i18nKey="Gender"> Gender </Trans>
+                            </Form.Label>
                             <div
                               style={{ flexDirection: "row", display: "flex" }}
                             >
@@ -373,9 +639,13 @@ export default function AddVisitor(props) {
                             </div>
                           </Form.Group>
                           <Form.Group as={Col} md="6">
-                            <div style={{ marginBottom: 12 }}>
-                              Physically Disabled
-                            </div>
+                            <Form.Label>
+                              <Trans i18nKey="Physically_Disabled">
+                                {" "}
+                                Physically disabled{" "}
+                              </Trans>
+                            </Form.Label>
+
                             <div
                               style={{ flexDirection: "row", display: "flex" }}
                             >
@@ -394,7 +664,9 @@ export default function AddVisitor(props) {
                             md="6"
                             controlId="validationCustom04"
                           >
-                            <Form.Label>Vidhansabha</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Vidhansabha"> Vidhansabha </Trans>
+                            </Form.Label>
                             <Form.Select
                               // style={{ background: "#f7f7f7",borderColor:'#bdc3c7'}}
                               aria-label="Default select example"
@@ -412,10 +684,13 @@ export default function AddVisitor(props) {
                               {fillVidhansabha()}
                             </Form.Select>
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Select VidhanSabha
+                              <Trans i18nKey="Select_Vidhansabha">
+                                {" "}
+                                Select VidhanSabha{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
 
@@ -424,7 +699,12 @@ export default function AddVisitor(props) {
                             md="6"
                             controlId="validationCustom04"
                           >
-                            <Form.Label>Constituency</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Constituency">
+                                {" "}
+                                Constituency{" "}
+                              </Trans>
+                            </Form.Label>
                             <Form.Select
                               aria-label="Default select example"
                               value={constituency}
@@ -440,10 +720,13 @@ export default function AddVisitor(props) {
                               {fillConstituency()}
                             </Form.Select>
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Select Constituency
+                              <Trans i18nKey="Select_Constituency">
+                                {" "}
+                                Select Constituency{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
@@ -454,7 +737,9 @@ export default function AddVisitor(props) {
                             md="6"
                             controlId="validationCustom04"
                           >
-                            <Form.Label>Minister</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Ministers"> Minister </Trans>
+                            </Form.Label>
                             <Form.Select
                               aria-label="Default select example"
                               value={getMinisterId}
@@ -469,10 +754,12 @@ export default function AddVisitor(props) {
                               {fillMinister()}
                             </Form.Select>
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Select Constituency
+                              <Trans i18nKey="Please_select_minister">
+                                Please Select Minister{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
 
@@ -481,7 +768,9 @@ export default function AddVisitor(props) {
                             md="6"
                             controlId="validationCustom04"
                           >
-                            <Form.Label>Mantralaya</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Mantralaya"> Mantralaya </Trans>
+                            </Form.Label>
                             <Form.Select
                               aria-label="Default select example"
                               onChange={(e) => setMantralaya(e.target.value)}
@@ -495,10 +784,13 @@ export default function AddVisitor(props) {
                               {fillMantralaya()}
                             </Form.Select>
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Select Mantralaya
+                              <Trans i18nKey="Select_Mantralaya">
+                                {" "}
+                                Select Mantralaya{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
@@ -507,34 +799,11 @@ export default function AddVisitor(props) {
                           <Form.Group
                             as={Col}
                             md="6"
-                            controlId="validationCustom04"
-                          >
-                            <Form.Label>Visit type</Form.Label>
-                            <Form.Select
-                              aria-label="Default select example"
-                              onChange={(e) => setVisitType(e.target.value)}
-                              value={visitType}
-                              required
-                            >
-                              <option selected value="">
-                                Select visit type
-                              </option>
-                              <option value="Single">Single</option>
-                              <option value="group">group</option>
-                            </Form.Select>
-                            <Form.Control.Feedback>
-                              Looks good!
-                            </Form.Control.Feedback>
-                            <Form.Control.Feedback type="invalid">
-                              Select Visit Type
-                            </Form.Control.Feedback>
-                          </Form.Group>
-                          <Form.Group
-                            as={Col}
-                            md="6"
                             controlId="validationCustom01"
                           >
-                            <Form.Label>Refrence</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Reference"> Reference </Trans>
+                            </Form.Label>
                             <Form.Control
                               placeholder="Reference"
                               required
@@ -543,10 +812,43 @@ export default function AddVisitor(props) {
                               onChange={(e) => setReference(e.target.value)}
                             />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Enter Refrence
+                              <Trans i18nKey="Enter_reference,_If_any!">
+                                {" "}
+                                Enter_reference,_If_any!{" "}
+                              </Trans>
+                            </Form.Control.Feedback>
+                          </Form.Group>
+
+                          <Form.Group
+                            as={Col}
+                            md="6"
+                            controlId="validationCustom01"
+                          >
+                            <Form.Label>
+                              <Trans i18nKey="location_type">
+                                {" "}
+                                Location Type{" "}
+                              </Trans>
+                            </Form.Label>
+                            <Form.Control
+                              placeholder="Location"
+                              required
+                              type="text"
+                              value={getLocationType}
+                              disabled
+                              // onChange={(e) => setLocationType(e.target.value)}
+                            />
+                            <Form.Control.Feedback>
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
+                            </Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">
+                              <Trans i18nKey="Please_enter_location_type">
+                                {" "}
+                                Please Enter Location type{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
@@ -557,7 +859,12 @@ export default function AddVisitor(props) {
                             md="12"
                             controlId="validationCustom02"
                           >
-                            <Form.Label>Reason to visit</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Reason_to_visit">
+                                {" "}
+                                Reason to visit{" "}
+                              </Trans>
+                            </Form.Label>
                             <Form.Control
                               required
                               placeholder="Reason to visit"
@@ -567,10 +874,13 @@ export default function AddVisitor(props) {
                               onChange={(e) => setReasonVisit(e.target.value)}
                             />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Enter Reason To Visit
+                              <Trans i18nKey="Please_enter_reason_to_visit">
+                                {" "}
+                                Please Enter Reason To Visit{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
@@ -583,7 +893,7 @@ export default function AddVisitor(props) {
                                 fontWeight: 800,
                               }}
                             >
-                              Media
+                              <Trans i18nKey="Media"> Media </Trans>
                             </div>
                             <div
                               style={{
@@ -622,7 +932,10 @@ export default function AddVisitor(props) {
                                         }}
                                         onClick={capture}
                                       >
-                                        Capture photo
+                                        <Trans i18nKey="Capture_photo">
+                                          {" "}
+                                          Capture photo{" "}
+                                        </Trans>
                                       </button>
                                     </div>
                                   </div>
@@ -642,8 +955,8 @@ export default function AddVisitor(props) {
                           </Form.Group>
                           <OtpModel
                             error={error}
-                            setOTP={setOTP}
-                            OTP={OTP}
+                            setOTP={setgetInputOTP}
+                            OTP={getInputOTP}
                             yesClick={handleData}
                             setOpen={setShowModal}
                             open={showModal}
@@ -661,7 +974,7 @@ export default function AddVisitor(props) {
                               height: "38px",
                             }}
                           >
-                            Create
+                            <Trans i18nKey="create"> Create </Trans>
                           </Button>
                         </div>
                       </Form>

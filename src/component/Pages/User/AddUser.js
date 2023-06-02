@@ -13,6 +13,7 @@ import {
 import Topbar from "../../Header/Topbar";
 import ListItem from "../../Dashboard/ListItem";
 import { useNavigate } from "react-router-dom";
+import { Trans } from "react-i18next";
 
 export default function AddUser(props) {
   const UserDetail = JSON.parse(localStorage.getItem("userData"));
@@ -178,7 +179,7 @@ export default function AddUser(props) {
                 <div class="card" style={{ borderRadius: 20 }}>
                   <div class="card-body ">
                     <b style={{ fontWeight: 500, color: "#000", fontSize: 18 }}>
-                      Add Users
+                      <Trans i18nKey="Add_Users"> Add Users </Trans>
                     </b>
                     <div
                       style={{
@@ -205,7 +206,7 @@ export default function AddUser(props) {
                             //   fontWeight: 800,
                             // }}
                             >
-                              First Name
+                              <Trans i18nKey="First_Name"> First Name </Trans>
                             </Form.Label>
                             <Form.Control
                               required
@@ -215,10 +216,13 @@ export default function AddUser(props) {
                               onChange={(e) => setFirstName(e.target.value)}
                             />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Enter valid first name
+                              <Trans i18nKey="Enter_valid_first_name">
+                                {" "}
+                                Enter valid first name{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                           <Form.Group
@@ -226,7 +230,9 @@ export default function AddUser(props) {
                             md="6"
                             controlId="validationCustom01"
                           >
-                            <Form.Label>Last Name</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Last_Name"> Last Name </Trans>
+                            </Form.Label>
                             <Form.Control
                               required
                               type="text"
@@ -235,10 +241,13 @@ export default function AddUser(props) {
                               onChange={(e) => setLastName(e.target.value)}
                             />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Enter valid last name
+                              <Trans i18nKey="Enter_valid_last_name">
+                                {" "}
+                                Enter valid last name{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
@@ -249,7 +258,9 @@ export default function AddUser(props) {
                             md="6"
                             controlId="validationCustom04"
                           >
-                            <Form.Label>Email</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Email"> Email </Trans>
+                            </Form.Label>
                             <Form.Control
                               required
                               placeholder="Email"
@@ -259,10 +270,13 @@ export default function AddUser(props) {
                               pattern="[A-Za-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
                             />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Enter valid email
+                              <Trans i18nKey="Enter_valid_email">
+                                {" "}
+                                Enter valid email{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                           <Form.Group
@@ -270,7 +284,12 @@ export default function AddUser(props) {
                             md="6"
                             controlId="validationCustom03"
                           >
-                            <Form.Label>Mobile Number</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Mobile_Number">
+                                {" "}
+                                Mobile Number{" "}
+                              </Trans>
+                            </Form.Label>
                             <Form.Control
                               required
                               placeholder="Mobile Number"
@@ -280,10 +299,13 @@ export default function AddUser(props) {
                               pattern="[6-9]{1}[0-9]{9}"
                             />
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Enter valid mobile number
+                              <Trans i18nKey="Enter_valid_mobile_number">
+                                {" "}
+                                Enter valid mobile number{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
@@ -293,7 +315,9 @@ export default function AddUser(props) {
                             md="6"
                             controlId="validationCustom04"
                           >
-                            <Form.Label>Status</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Status"> Status </Trans>
+                            </Form.Label>
                             <Form.Select
                               aria-label="Default select example"
                               onChange={(e) => setStatus(e.target.value)}
@@ -305,10 +329,13 @@ export default function AddUser(props) {
                               <option value="Inactive">Inactive</option>
                             </Form.Select>
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Select Status
+                              <Trans i18nKey="Please_select_status">
+                                {" "}
+                                Please Select Status{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                           {/* <Form.Group
@@ -341,7 +368,9 @@ export default function AddUser(props) {
                             md="6"
                             controlId="validationCustom04"
                           >
-                            <Form.Label>Language</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Language"> Language </Trans>
+                            </Form.Label>
                             <Form.Select
                               // style={{ background: "white", borderColor: '#bdc3c7' }}
                               aria-label="Default select example"
@@ -349,14 +378,17 @@ export default function AddUser(props) {
                               value={LanguageId}
                               required
                             >
-                              <option selected>Select language</option>
+                              <option selected> Select language </option>
                               {fillLanguage()}
                             </Form.Select>
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Select Language
+                              <Trans i18nKey="Select_Language">
+                                {" "}
+                                Select Language{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
@@ -367,7 +399,9 @@ export default function AddUser(props) {
                             md="6"
                             controlId="validationCustom04"
                           >
-                            <Form.Label>Role</Form.Label>
+                            <Form.Label>
+                              <Trans i18nKey="Role"> Role </Trans>
+                            </Form.Label>
                             <Form.Select
                               aria-label="Default select example"
                               value={RoleId}
@@ -375,14 +409,17 @@ export default function AddUser(props) {
                               onChange={(e) => handleSelectRole(e)}
                               required
                             >
-                              <option selected>--Select Role--</option>
+                              <option selected> --Select Role--</option>
                               {fillRoles()}
                             </Form.Select>
                             <Form.Control.Feedback>
-                              Looks good!
+                              <Trans i18nKey="look_good"> Looks good! </Trans>
                             </Form.Control.Feedback>
                             <Form.Control.Feedback type="invalid">
-                              Enter valid email
+                              <Trans i18nKey="Please_select_role">
+                                {" "}
+                                Please select role{" "}
+                              </Trans>
                             </Form.Control.Feedback>
                           </Form.Group>
                           {getFlag == true ? (
@@ -391,7 +428,9 @@ export default function AddUser(props) {
                               md="6"
                               controlId="validationCustom04"
                             >
-                              <Form.Label>Password</Form.Label>
+                              <Form.Label>
+                                <Trans i18nKey="Password"> Password </Trans>
+                              </Form.Label>
                               <Form.Control
                                 disabled
                                 placeholder="Password"
@@ -402,10 +441,13 @@ export default function AddUser(props) {
                                 }
                               ></Form.Control>
                               <Form.Control.Feedback>
-                                Looks good!
+                                <Trans i18nKey="look_good"> Looks good! </Trans>
                               </Form.Control.Feedback>
                               <Form.Control.Feedback type="invalid">
-                                Enter valid email
+                                <Trans i18nKey="Enter_8_digit_password">
+                                  {" "}
+                                  Enter 8 digit password{" "}
+                                </Trans>
                               </Form.Control.Feedback>
                             </Form.Group>
                           ) : (
@@ -414,7 +456,9 @@ export default function AddUser(props) {
                               md="6"
                               controlId="validationCustom04"
                             >
-                              <Form.Label>Password</Form.Label>
+                              <Form.Label>
+                                <Trans i18nKey="Password"> Password </Trans>
+                              </Form.Label>
                               <Form.Control
                                 placeholder="Password"
                                 type="password"
@@ -425,10 +469,13 @@ export default function AddUser(props) {
                                 }
                               ></Form.Control>
                               <Form.Control.Feedback>
-                                Looks good!
+                                <Trans i18nKey="look_good"> Looks good! </Trans>
                               </Form.Control.Feedback>
                               <Form.Control.Feedback type="invalid">
-                                Enter password
+                                <Trans i18nKey="Enter_password">
+                                  {" "}
+                                  Enter password{" "}
+                                </Trans>
                               </Form.Control.Feedback>
                             </Form.Group>
                           )}
@@ -446,7 +493,10 @@ export default function AddUser(props) {
                                 fontWeight: 800,
                               }}
                             >
-                              Profile Picture
+                              <Trans i18nKey="Profile_Picture">
+                                {" "}
+                                Profile Picture{" "}
+                              </Trans>
                             </Form.Label>
 
                             <Button
@@ -463,7 +513,7 @@ export default function AddUser(props) {
                               variant="contained"
                               component="label"
                             >
-                              Upload
+                              <Trans i18nKey="Upload"> Upload </Trans>
                               <input
                                 hidden
                                 accept="image/*"
@@ -503,7 +553,7 @@ export default function AddUser(props) {
                                 width: "100px",
                               }}
                             >
-                              Create
+                              <Trans i18nKey="create"> Create </Trans>
                             </button>
                           </div>
                         </div>
