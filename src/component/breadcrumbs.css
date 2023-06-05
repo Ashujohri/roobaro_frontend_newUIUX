@@ -1,0 +1,31 @@
+.breadcrumbs-section{
+  position: absolute;
+  bottom: 0.5rem;
+  .breadcrumbs{
+    display: flex;
+    list-style: none;
+    
+    .breadcrumb-item{
+     padding: 1rem;
+     position: relative;
+     text-transform: capitalize;
+     color:#fff !important;
+      
+      .disabled{
+          color:rgba(52, 52, 52) !important;
+      }
+      &::after{
+        content: "/";
+        position: absolute;
+        margin-left: 1rem;
+
+      }
+          &:nth-last-child(1){
+            &::after{
+            content: "";
+            }
+          }
+   
+    }
+  }
+}

@@ -13,10 +13,14 @@ import AddUser from "./component/Pages/User/AddUser";
 import Visit from "./component/Pages/Visitor/Visit";
 import AddVisitor from "./component/Pages/Visitor/AddVisitor";
 import VisitDetails from "./component/Pages/Visitor/VisitDetails";
-import Minister from './component/Pages/Minister/Minister'
-import AddMinister from './component/Pages/Minister/AddMinister'
+import Minister from "./component/Pages/Minister/Minister";
+import AddMinister from "./component/Pages/Minister/AddMinister";
 import Profile from "./component/Pages/Profile";
+import AppoinmentModel from "./component/Models/AppoinmentModel";
+import MinisterDetails from "./component/Pages/Minister/MinisterDetails";
+import Bread from "./component/Bread";
 // import Dashboard360 from "./component/Dashboard/DashboardAdmin";
+
 
 export default function AdminRouter(props) {
   return (
@@ -30,14 +34,17 @@ export default function AdminRouter(props) {
           <Route element={<Dashboard />} path="/dashboard" />
           <Route element={<Reset />} path="/ForgotPassword" />
           <Route element={<User />} path="/users" />
-          <Route element={<AddUser />} path="/AddUser" />
+          <Route element={<AddUser />} path="/AddUser" breadcrumb='AddUser'/>
           <Route element={<UserView />} path="/UserDetailView" />
-          <Route element={<Minister/>} path="/minister" />
+          <Route element={<Minister />} path="/minister" />
           <Route element={<AddMinister />} path="/AddMinister" />
+          <Route element={<MinisterDetails />} path="/MinisterDetailView" />
           <Route element={<Visit />} path="/visitors" />
           <Route element={<AddVisitor />} path="/AddVisitor" />
           <Route element={<VisitDetails />} path="/VisitorDetailView" />
           <Route element={<Profile />} path="/myprofile" />
+          <Route element={<AppoinmentModel />} path="/AppoinmentModel" />
+          <Route element={<Bread/>} path="/Bread" />
 
           {/* <Route element={<DashboardUser />} path="/DashboardUser" /> */}
           {/* <Route element={<Dashboard360 />} path="/DashboardAdmin" /> */}

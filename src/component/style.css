@@ -143,5 +143,56 @@ button {
   border-color: #0077ff;
 }
 
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.error {
+  border: 1px solid red !important;
+}
+
+.success {
+  border: 1px solid green !important;
+}
+
+.custom-file-upload{
+  background: #f7f7f7; 
+  padding: 8px;
+  border: 1px solid #e3e3e3; 
+  border-radius: 17px; 
+  border: 1px solid #ccc; 
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.file {
+  position: absolute;
+  clip: rect(0px, 0px, 0px, 0px);
+  display: block;
+}
+
+.labelfile {
+  color: #333;
+  background-color: #fff;
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  background-image: none;
+  white-space: nowrap;
+  padding: 6px 8px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+
 
 

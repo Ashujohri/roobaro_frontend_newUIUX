@@ -13,6 +13,7 @@ import {
 import Topbar from "../../Header/Topbar";
 import ListItem from "../../Dashboard/ListItem";
 import { useNavigate } from "react-router-dom";
+import Bread from "../../Bread";
 
 export default function AddUser(props) {
   const UserDetail = JSON.parse(localStorage.getItem("userData"));
@@ -43,35 +44,44 @@ export default function AddUser(props) {
   };
 
   const handleSubmit = async (e) => {
-    var formData = new FormData();
-    formData.append("firstname", Firstname);
-    formData.append("lastname", LastName);
-    formData.append("email", EmailAddress);
-    formData.append("mobile_number", Mobile);
-    formData.append("status", Status);
-    formData.append("minister_id", UserDetail.minister_id);
-    formData.append("created_at", moment().format("YYYY-MM-DD HH:mm:ss"));
-    formData.append("picture", Picture.fileBytes);
-    formData.append("role_id", RoleId);
-    formData.append("password", Password);
-    formData.append("language_id", LanguageId);
-    const config = { headers: { "content-type": "multipart/form-data" } };
-    var result = await postDataAndImageAxios("users/addUser", formData, config);
-    if (result.status == true) {
-      setShowModal(false);
-      Swal.fire({
-        icon: "success",
-        title: "Done",
-        text: "User Added Successfully",
-      });
-      navigate({ pathname: "/users" });
-    } else {
-      setShowModal(false);
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: `${result.message}`,
-      });
+    try {
+      var formData = new FormData();
+      formData.append("firstname", Firstname);
+      formData.append("lastname", LastName);
+      formData.append("email", EmailAddress);
+      formData.append("mobile_number", Mobile);
+      formData.append("status", Status);
+      formData.append("minister_id", UserDetail.minister_id);
+      formData.append("created_at", moment().format("YYYY-MM-DD HH:mm:ss"));
+      formData.append("picture", Picture.fileBytes);
+      formData.append("role_id", RoleId);
+      formData.append("password", Password);
+      formData.append("language_id", LanguageId);
+      const config = { headers: { "content-type": "multipart/form-data" } };
+      var result = await postDataAndImageAxios(
+        "users/addUser",
+        formData,
+        config
+      );
+
+      if (result?.status == true) {
+        setShowModal(false);
+        Swal.fire({
+          icon: "success",
+          title: "Done",
+          text: "User Added Successfully",
+        });
+        navigate({ pathname: "/users" });
+      } else {
+        setShowModal(false);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `${result.message}`,
+        });
+      }
+    } catch (error) {
+      console.log("error in catch", error);
     }
   };
 
@@ -161,15 +171,13 @@ export default function AddUser(props) {
     });
   };
 
-  const handleOpenModal = () => {
-    setShowModal(true);
-  };
-
+  
   return (
     <>
       <div id="wrapper">
         <Topbar />
         <ListItem />
+      <Bread/>
         <div class="content-page">
           <div class="container-fluid">
             <div class="row">
@@ -487,6 +495,7 @@ export default function AddUser(props) {
                             handleSubmit={handleSubmit}
                             setOpen={setShowModal}
                             open={showModal}
+                            title={"Are you sure you want to add user?"}
                           />
                         </Row>
                         <div class="col-xl-6">
@@ -515,7 +524,7 @@ export default function AddUser(props) {
           </div>
         </div>
       </div>
-      <div>{/* <Model1 setOpen={setShowModal} open={showModal} /> */}</div>
+      
     </>
   );
 }

@@ -14,6 +14,7 @@ export default function VisitDetails(props) {
   const location = useLocation();
   const navigate = useNavigate();
   const visitorData = location.state;
+  console.log("visitorDATAAAAAAAA", visitorData);
   const [Firstname, setFirstName] = useState(visitorData.firstname);
   const [LastName, setLastName] = useState(visitorData.lastname);
   const [visitorstatus, setVisitorStatus] = useState(
@@ -44,12 +45,8 @@ export default function VisitDetails(props) {
   const [getConstituencyId, setConstituencyId] = useState(
     visitorData.constituency_id
   );
-  const [Assign, setAssign] = useState("");
-  const [Priority, setPriority] = useState([]);
   const [reasonVisit, setReasonVisit] = useState(visitorData.reason_to_visit);
   const [refrence, setReference] = useState(visitorData.refernce);
-  const [CustomerPriorityList, setCustomerPriorityList] = useState([]);
-  const [checkvalidate, setcheckvalidate] = useState(false);
   const [validated, setValidated] = useState(false);
   const [Gender, setGender] = useState(visitorData.gender);
   const [PhysicallyDisabled, setPhysicallyDisabled] = useState(
@@ -57,17 +54,31 @@ export default function VisitDetails(props) {
   );
   const [picture, setpicture] = useState(visitorData.picture);
   const [id, setId] = useState(visitorData.id);
+ 
+  const[engage_show,setEngage_show]=useState(moment.utc(visitorData.engage_time*1000).format("HH:mm:ss"))
+
   const [getLocationType, setLocationType] = useState(
     visitorData.location_type
   );
 
-  // Engade Time//
   const handleClick = () => {
-    let startTime = moment().format(visitAdded);
-    var endTime = moment().format("hh:mm:ss");
-    let aa = moment
-      .utc(moment(endTime, " hh:mm:ss").diff(moment(startTime, " hh:mm:ss")))
-      .format("hh:mm:ss");
+    let startTime = moment(visitAdded).format("HH:mm:ss");
+    var hms1 = startTime;
+    var a1 = hms1.split(":");
+    var seconds1 = a1[0] * 60 * 60 + +a1[1] * 60 + +a1[2];
+    var endTime = moment.utc().format("HH:mm:ss");
+    var hms2 = endTime;
+    var a2 = hms2.split(":");
+    var seconds2 = a2[0] * 60 * 60 + +a2[1] * 60 + +a2[2];
+    var engagetime = seconds2 - seconds1;
+    let d = Number(engagetime);
+    var h = Math.floor(d / 3600);
+    var m = Math.floor((d % 3600) / 60);
+    var s = Math.floor((d % 3600) % 60);
+    var hDisplay = h > 0 ? h + (h == 1 ? " hour: " : " hours: ") : "";
+    var mDisplay = m > 0 ? m + (m == 1 ? " minute: " : " minutes: ") : "";
+    var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+    var aa = hDisplay + mDisplay + sDisplay;
     setEngagementTime(aa);
   };
 
@@ -81,18 +92,10 @@ export default function VisitDetails(props) {
   ];
 
   useEffect(function () {
-    //   // chkToken();
     handleClick();
   }, []);
 
-  // const chkToken = async () => {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) {
-  //     navigate("/AdminLogin", { replace: true });
-  //   } else {
-  //     navigate("/visitors", { replace: true });
-  //   }
-  // };
+ 
 
   const handleSubmit = async () => {
     try {
@@ -117,6 +120,7 @@ export default function VisitDetails(props) {
         picture: picture,
         id: id,
         created_at: visitAdded,
+        engage_time: engagementTime,
         location_type: getLocationType ? getLocationType : "Office",
       };
       let result = await postDataAxios(`visitors/updateVisitor/${id}`, body);
@@ -160,7 +164,8 @@ export default function VisitDetails(props) {
                       }}
                     >
                       <b>Visit Details</b>
-                      {visitorstatus === "Completed" || visitorstatus === "completed"  ? (
+                      {visitorstatus === "Completed" ||
+                      visitorstatus === "completed" ? (
                         <button
                           disabled
                           class="btn btn-sm waves-effect waves-light"
@@ -242,7 +247,7 @@ export default function VisitDetails(props) {
                             controlId="validationCustom02"
                           >
                             <Form.Label>Engagement Time</Form.Label>
-                            <Form.Control value={engagementTime} disabled />
+                            <Form.Control value={engage_show} disabled />
                             <Form.Control.Feedback>
                               Looks good!
                             </Form.Control.Feedback>

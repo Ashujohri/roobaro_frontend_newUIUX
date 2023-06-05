@@ -9,6 +9,7 @@ import { postDataAxios } from "../../Services/NodeServices";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
+import MobileVerify from "./MobileVerify";
 
 export default function LoginWithMobile() {
   const navigate = useNavigate();
@@ -78,11 +79,11 @@ export default function LoginWithMobile() {
   };
 
   const handleOtp = async (e) => {
-    e.preventDefault();
-
+    // e.preventDefault();
+    // alert('hhh')
     var otp = parseInt(Math.random() * 8999) + 1000;
 
-    // alert(result)
+    // alert(otp)
     var result = await postDataAxios("users/authenticate", {
       mobile: getMobile,
     });
@@ -92,6 +93,7 @@ export default function LoginWithMobile() {
       // var result = await postDataAxios("users/...",{mobile:getMobile,otp:otp})
       navigate(`/MobileVerify`, {
         state: {
+          // handleOtp:handleOtp,
           otp: otp,
           roleName: result.roleName[0],
           data: JSON.stringify(result.data),
@@ -101,6 +103,7 @@ export default function LoginWithMobile() {
         },
       });
     }
+    setBtnStatus(true);
   };
 
   return (
@@ -211,6 +214,7 @@ export default function LoginWithMobile() {
           </div>
         </div>
       </div>
+      {btnStatus && <MobileVerify handleOtp={handleOtp} />}
     </>
   );
 }

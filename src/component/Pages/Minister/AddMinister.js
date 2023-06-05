@@ -15,9 +15,10 @@ import {
 } from "../../Services/NodeServices";
 import Topbar from "../../Header/Topbar";
 import ListItem from "../../Dashboard/ListItem";
-
+import { useNavigate } from "react-router-dom";
 
 export default function AddMinister(props) {
+  const navigate = useNavigate();
   const UserData = JSON.parse(localStorage.getItem("userData"));
   const [Firstname, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
@@ -34,9 +35,9 @@ export default function AddMinister(props) {
   const [checkvalidate, setcheckvalidate] = useState(false);
   const [stateId, setStateId] = useState(UserData.StateId);
   const [validated, setValidated] = useState(false);
- 
+
   const [showModal, setShowModal] = useState(false);
-  console.log('Picture',Picture)
+  console.log("Picture", Picture);
   const handleCompanyPicture = (event) => {
     setPicture({
       fileBytes: event.target.files[0],
@@ -54,29 +55,34 @@ export default function AddMinister(props) {
     // formData.append("created_at", moment().format("YYYY-MM-DD HH:mm:ss"));
     // formData.append("picture", Picture.fileBytes);
     // const config = { headers: { "content-type": "multipart/form-data" } };
-    var body={
-          firstname: Firstname,
-          lastname: LastName,
-          mobile_number: Mobile,
-          email: EmailAddress,
-          vidhansabha_id: vidhanSabha,
-          mantralya_id: mantralaya,
-          constituency_id: constituency,  
-          picture: Picture.fileBytes,
-          status: Status,
-          created_at: moment().format("YYYY-MM-DD HH:mm:ss"),
-           
-    }
+    var body = {
+      firstname: Firstname,
+      lastname: LastName,
+      mobile_number: Mobile,
+      email: EmailAddress,
+      vidhansabha_id: vidhanSabha,
+      mantralya_id: mantralaya,
+      constituency_id: constituency,
+      picture: Picture.fileBytes,
+      status: Status,
+      created_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+    };
     const config = { headers: { "content-type": "multipart/form-data" } };
-    var result = await postDataAndImageAxios("minister/addMinisters", body,config);
-    alert(JSON.stringify(result))
+    var result = await postDataAndImageAxios(
+      "minister/addMinisters",
+      body,
+      config
+    );
+    alert(JSON.stringify(result));
     if (result.status == true) {
       Swal.fire({
         icon: "success",
         title: "Done",
         text: "Minister Added Successfully",
       });
+
       setShowModal(false);
+      navigate({ pathname: "/minister" });
     } else {
       Swal.fire({
         icon: "error",
@@ -161,17 +167,8 @@ export default function AddMinister(props) {
     fetchAllVidhansabha();
     fetchAllConstituency();
     fetchAllMantralaya();
-   
   }, []);
 
- 
- 
-
- 
-
-
-
- 
   const handleOpenModal = () => {
     setShowModal(true);
   };
@@ -283,6 +280,7 @@ export default function AddMinister(props) {
                             <Form.Label>Mobile Number</Form.Label>
                             <Form.Control
                               required
+                              maxLength={10}
                               placeholder="Mobile Number"
                               type="text"
                               value={Mobile}
@@ -298,7 +296,6 @@ export default function AddMinister(props) {
                           </Form.Group>
                         </Row>
                         <Row className="mb-2">
-                            
                           <Form.Group
                             as={Col}
                             md="6"
@@ -313,7 +310,6 @@ export default function AddMinister(props) {
                               onChange={(e) => {
                                 setVidhanSabha(e.target.value);
                                 fetchAllConstituency(e.target.value);
-                               
                               }}
                             >
                               <option selected value="">
@@ -341,7 +337,6 @@ export default function AddMinister(props) {
                               required
                               onChange={(e) => {
                                 setConstituency(e.target.value);
-                
                               }}
                             >
                               <option selected value="">
@@ -356,14 +351,10 @@ export default function AddMinister(props) {
                               Select Constituency
                             </Form.Control.Feedback>
                           </Form.Group>
-                         
-
-                         
                         </Row>
 
-                       
                         <Row className="mb-2">
-                        <Form.Group
+                          <Form.Group
                             as={Col}
                             md="6"
                             controlId="validationCustom04"
@@ -388,8 +379,8 @@ export default function AddMinister(props) {
                               Select Mantralaya
                             </Form.Control.Feedback>
                           </Form.Group>
-                       
-                        <Form.Group
+
+                          <Form.Group
                             as={Col}
                             md="6"
                             controlId="validationCustom04"
@@ -412,11 +403,8 @@ export default function AddMinister(props) {
                               Select Status
                             </Form.Control.Feedback>
                           </Form.Group>
-                         
-                        
                         </Row>
                         <Row className="mb-2">
-                       
                           <Form.Group
                             as={Col}
                             md="2"
@@ -471,23 +459,31 @@ export default function AddMinister(props) {
                             handleSubmit={handleSubmit}
                             setOpen={setShowModal}
                             open={showModal}
+                            title={"Are you sure you wants to add minister?"}
                           />
-                           <div className="mb-2">
-                        <div className="form-check" style={{marginTop:15,  fontWeight:800,color:'grey'}}>
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="checkbox-signin"
-                            defaultChecked=""
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="checkbox-signin"
-                          >
-                            Sent weekly visitors report
-                          </label>
-                        </div>
-                      </div>
+                          <div className="mb-2">
+                            <div
+                              className="form-check"
+                              style={{
+                                marginTop: 15,
+                                fontWeight: 800,
+                                color: "grey",
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                className="form-check-input"
+                                id="checkbox-signin"
+                                defaultChecked=""
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor="checkbox-signin"
+                              >
+                                Sent weekly visitors report
+                              </label>
+                            </div>
+                          </div>
                         </Row>
                         <div class="col-xl-6">
                           <div class="button-list">
@@ -515,7 +511,6 @@ export default function AddMinister(props) {
           </div>
         </div>
       </div>
-     
     </>
   );
 }

@@ -34,9 +34,10 @@ export default function Model(props) {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              width: props.width,
             }}
           >
-            Are you sure you want to add user?
+            {props.title}
           </div>
 
           <div
@@ -71,8 +72,8 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-30%,-40%)",
-  width: 320,
-  height: 320,
+  width: 345,
+  height: 350,
   borderRadius: 3,
   bgcolor: "WHITE",
 

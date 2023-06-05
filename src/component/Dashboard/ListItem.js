@@ -50,7 +50,7 @@ export default function ListItem(props) {
                       padding: 10,
                     }}
                   >
-                    Dahsboard
+                    Dashboard
                   </span>
                 </a>
               </li>
@@ -104,7 +104,7 @@ export default function ListItem(props) {
                 </li>
               ) : null}
 
-<li>
+              <li>
                 <a
                   style={{
                     cursor: "pointer",
@@ -119,7 +119,7 @@ export default function ListItem(props) {
                       padding: 10,
                     }}
                   >
-                   Ministers
+                    Ministers
                   </span>
                 </a>
               </li>
@@ -243,6 +243,31 @@ export default function ListItem(props) {
                     display: "flex",
                     alignItems: "center",
                   }}
+                  onClick={() => handleRoute("AppoinmentModel")}
+                >
+                  {
+                    <i
+                      className="mdi mdi-clipboard-list-outline"
+                      style={{ fontSize: 18 }}
+                    />
+                  }
+                  <span
+                    style={{
+                      padding: 10,
+                    }}
+                  >
+                    Appoinments
+                  </span>
+                </a>
+              </li>
+
+              <li>
+                <a
+                  style={{
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
                   onClick={() => handleLogout()}
                 >
                   {<i className="fe-log-out" style={{ fontSize: 18 }} />}
@@ -299,3 +324,4 @@ export default function ListItem(props) {
     </>
   );
 }
+   

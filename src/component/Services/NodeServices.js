@@ -4,10 +4,10 @@ var ServerURL = "http://localhost:9292";
 // var ServerURL = "http://campusshala.com:9292";
 
 const getDataAxios = async (Url) => {
-  let Token = localStorage.getItem("token")
+  let Token = localStorage.getItem("token");
   try {
     var url = `${ServerURL}/${Url}`;
-    var config = { 
+    var config = {
       headers: {
         "Content-type": "application/json",
         Authorization: `Bearer ${Token}`,
@@ -15,11 +15,13 @@ const getDataAxios = async (Url) => {
     };
 
     var response = await axios.get(url, config);
+    // console.log(response);
     var result = response.data;
 
     return result;
   } catch (error) {
     if (error.response.status === 401) {
+      // alert("Session Expired");
       Swal.fire({
         position: "top-end",
         icon: "info",
@@ -39,8 +41,7 @@ const getDataAxios = async (Url) => {
 
 // To Send Data In Node
 const postDataAxios = async (Url, body) => {
-  let Token = localStorage.getItem("token")
-
+  let Token = localStorage.getItem("token");
   try {
     var url = `${ServerURL}/${Url}`;
     var config = {
@@ -50,10 +51,12 @@ const postDataAxios = async (Url, body) => {
       },
     };
     const response = await axios.post(url, body, config);
+    // console.log("response in post", response);
     var result = response.data;
     return result;
   } catch (error) {
     if (error.response.status === 401) {
+      // alert("Session Expired");
       Swal.fire({
         position: "top-end",
         icon: "info",
@@ -72,7 +75,7 @@ const postDataAxios = async (Url, body) => {
 };
 
 const putDataAxios = async (Url, body) => {
-  let Token = localStorage.getItem("token")
+  var Token = localStorage.getItem("token");
   try {
     var url = `${ServerURL}/${Url}`;
     const config = {
@@ -86,6 +89,7 @@ const putDataAxios = async (Url, body) => {
     return result;
   } catch (error) {
     if (error.response.status === 401) {
+      // alert("Session Expired");
       Swal.fire({
         position: "top-end",
         icon: "info",
@@ -104,7 +108,7 @@ const putDataAxios = async (Url, body) => {
 };
 
 const postDataAndImageAxios = async (Url, body) => {
-  let Token = localStorage.getItem("token")
+  let Token = localStorage.getItem("token");
   try {
     var url = `${ServerURL}/${Url}`;
     const config = {
@@ -119,6 +123,7 @@ const postDataAndImageAxios = async (Url, body) => {
     return result;
   } catch (error) {
     if (error.response.status === 401) {
+      // alert("Session Expired");
       Swal.fire({
         position: "top-end",
         icon: "info",
@@ -137,7 +142,7 @@ const postDataAndImageAxios = async (Url, body) => {
 };
 
 const putDataAndImageAxios = async (Url, body) => {
-  let Token = localStorage.getItem("token")
+  var Token = localStorage.getItem("token");
   try {
     var url = `${ServerURL}/${Url}`;
     const config = {

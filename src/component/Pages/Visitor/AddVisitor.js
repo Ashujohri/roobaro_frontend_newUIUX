@@ -25,7 +25,7 @@ export default function AddVisitor(props) {
   const [vidhanSabha, setVidhanSabha] = useState("");
   const [constituency, setConstituency] = useState("");
   const [mantralaya, setMantralaya] = useState("");
-  const [visitType, setVisitType] = useState("");
+  const [visitType, setVisitType] = useState("Single");
   const [refrence, setReference] = useState("");
   const [reasonVisit, setReasonVisit] = useState("");
   const [getMinisterId, setMinisterId] = useState("");
@@ -37,7 +37,9 @@ export default function AddVisitor(props) {
   const [getAllMantralaya, setAllMantralaya] = useState([]);
   const [stateId, setStateId] = useState(UserData.StateId);
   const [picture, setPicture] = useState("");
-  const [CreatedAt, setCreatedAt] = useState(moment().format("YYYY-MM-DD HH:mm:ss"));
+  const [CreatedAt, setCreatedAt] = useState(
+    moment().format("YYYY-MM-DD HH:mm:ss")
+  );
   const [camstatus, setCamStatus] = useState(false);
   const webcamRef = React.useRef(null);
   const [showModal, setShowModal] = useState(false);
@@ -47,6 +49,11 @@ export default function AddVisitor(props) {
   const [getLocationType, setLocationType] = useState("");
   const [getMinister, setMinister] = useState([]);
   const [error, setError] = useState(false);
+  const [inputFields, setInputFields] = useState([
+    {
+      fullName: "",
+    },
+  ]);
   const videoConstraints = {
     width: 200,
     height: 200,
@@ -74,7 +81,11 @@ export default function AddVisitor(props) {
     { type: "Yes", id: 1, color: false },
     { type: "No", id: 2, color: false },
   ];
-
+  const data3 = [
+    { type: "Single", id: 1, color: false },
+    { type: "Group", id: 2, color: false },
+  ];
+  // alert(visitType);
   useEffect(() => {
     chkToken();
     fetchAllVidhansabha();
@@ -89,6 +100,27 @@ export default function AddVisitor(props) {
     } else {
       navigate("/AddVisitor", { replace: true });
     }
+  };
+  const addInputField = () => {
+    setInputFields([
+      ...inputFields,
+      {
+        fullName: "",
+        emailAddress: "",
+        salary: "",
+      },
+    ]);
+  };
+  const removeInputFields = (index) => {
+    const rows = [...inputFields];
+    rows.splice(index, 1); 
+    setInputFields(rows);
+  };
+  const handleChange = (index, evnt) => {
+    const { name, value } = evnt.target;
+    const list = [...inputFields];
+    list[index][name] = value;
+    setInputFields(list);
   };
 
   const fetchAllVidhansabha = async () => {
@@ -207,7 +239,7 @@ export default function AddVisitor(props) {
           reason_to_visit: reasonVisit.toString(),
           picture: picture,
           user_id: UserData.id,
-          created_at:CreatedAt,
+          created_at: CreatedAt,
           minister_id: getMinisterId,
           group_member: "Sachin",
           visitor_status: "ongoing",
@@ -267,6 +299,20 @@ export default function AddVisitor(props) {
                         onSubmit={handleValidate}
                       >
                         <Row className="mb-2">
+                          <Form.Group as={Col} md="6">
+                            <div style={{ marginBottom: 12 }}>Visit Type</div>
+                            <div
+                              style={{ flexDirection: "row", display: "flex" }}
+                            >
+                              <RadioButton
+                                setType={setVisitType}
+                                getType={visitType}
+                                data={data3}
+                              />
+                            </div>
+                          </Form.Group>
+                        </Row>
+                        <Row className="mb-2">
                           <Form.Group
                             as={Col}
                             md="6"
@@ -308,6 +354,58 @@ export default function AddVisitor(props) {
                               Enter valid last name
                             </Form.Control.Feedback>
                           </Form.Group>
+                          {visitType=='Group' && <div className="container">
+                            <div className="row">
+                              <div className="col-sm-8">
+                                {inputFields.map((data, index) => {
+                                  const { fullName } =
+                                    data;
+                                  return (
+                                    <div className="row my-3" key={index}>
+                                      <div className="col">
+                                        <div className="form-group">
+                                          <input
+                                            type="text"
+                                            onChange={(evnt) =>
+                                              handleChange(index, evnt)
+                                            }
+                                            value={fullName}
+                                            name="fullName"
+                                            className="form-control"
+                                            placeholder="Full Name"
+                                          />
+                                        </div>
+                                      </div>
+
+                                      <div className="col">
+                                        {inputFields.length !== 1 ? (
+                                          <button
+                                            className="btn btn-outline-danger"
+                                            onClick={removeInputFields}
+                                          >
+                                            Remove
+                                          </button>
+                                        ) : (
+                                          ""
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+
+                                <div className="row">
+                                  <div className="col-sm-12">
+                                    <button
+                                      className="btn btn-outline-success "
+                                      onClick={addInputField}
+                                    >
+                                      Add New
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>}
                         </Row>
                         <Row className="mb-2">
                           <Form.Group
@@ -504,31 +602,6 @@ export default function AddVisitor(props) {
                           <Form.Group
                             as={Col}
                             md="6"
-                            controlId="validationCustom04"
-                          >
-                            <Form.Label>Visit type</Form.Label>
-                            <Form.Select
-                              aria-label="Default select example"
-                              onChange={(e) => setVisitType(e.target.value)}
-                              value={visitType}
-                              required
-                            >
-                              <option selected value="">
-                                Select visit type
-                              </option>
-                              <option value="Single">Single</option>
-                              <option value="group">group</option>
-                            </Form.Select>
-                            <Form.Control.Feedback>
-                              Looks good!
-                            </Form.Control.Feedback>
-                            <Form.Control.Feedback type="invalid">
-                              Select Visit Type
-                            </Form.Control.Feedback>
-                          </Form.Group>
-                          <Form.Group
-                            as={Col}
-                            md="6"
                             controlId="validationCustom01"
                           >
                             <Form.Label>Refrence</Form.Label>
@@ -641,7 +714,7 @@ export default function AddVisitor(props) {
                             error={error}
                             setOTP={setOTP}
                             OTP={OTP}
-                            yesClick={handleData}
+                            handleSubmit={handleData}
                             setOpen={setShowModal}
                             open={showModal}
                           />

@@ -33,55 +33,49 @@ export default function Visit(props) {
   const [getRefresh, setRefresh] = useState(false);
   const [isCheck, setIsCheck] = useState([]);
 
-
-
+  // alert(JSON.stringify(getAllVisits));
   useEffect(function () {
-  
     fetchAllVisits();
   }, []);
 
  
 
   const fetchAllVisits = async () => {
+    var temp = [];
     var res = await getDataAxios(
       `visitors/displayVisitors/${UserData.minister_id}`
     );
-    if (props?.timeLineData) {
-      setAllVisits(props?.timeLineData);
-      setVistTableData(props?.timeLineData);
-    } else {
-      setAllVisits(res.result);
-      setVistTableData(res.result);
-      let arr = [];
-      res.result.map((item) => {
-        console.log("item", item);
-        delete item.minister_id;
-        delete item.constituency_id;
-        delete item.group_member;
-        delete item.location_type;
-        delete item.physically_disabled;
-        delete item.picture;
-        delete item.updated_at;
-        delete item.refernce;
-        delete item.reason_to_visit;
-        delete item.ConstituencyName;
-        delete item.MantralayName;
-        delete item.date_of_birth;
-        delete item.engage_time;
-        delete item.mantralya_id;
-        delete item.user_id;
-        delete item.vidhansabha_id;
-        delete item.gender;
-        
-       
-        item['created_at']=moment(item.created_at).format("DD/MM/YY HH:MM a");
-      
-
-        arr.push(item);
-      });
-      setVistExcelData(arr);
-   
-    }
+    alert(JSON.stringify(res))
+    console.log("hemu chotu", res);
+    temp = res.result;
+    let arr = [];
+    // temp.map((item) => {
+    //   console.log("item", item);
+    //   delete item.minister_id;
+    //   delete item.constituency_id;
+    //   delete item.group_member;
+    //   delete item.location_type;
+    //   delete item.physically_disabled;
+    //   delete item.picture;
+    //   delete item.updated_at;
+    //   delete item.refernce;
+    //   delete item.reason_to_visit;
+    //   delete item.ConstituencyName;
+    //   delete item.MantralayName;
+    //   delete item.date_of_birth;
+    //   delete item.engage_time;
+    //   delete item.mantralya_id;
+    //   delete item.user_id;
+    //   delete item.vidhansabha_id;
+    //   delete item.gender;
+    //   item["created_at"] = moment(item.created_at).format(
+    //     "YYYY-MM-DD HH:mm:ss"
+    //   );
+    //   arr.push(item);
+    // });
+    setVistExcelData(arr);
+    setAllVisits(res.result);
+    setVistTableData(res.result);
   };
 
   const handleClick = () => {
@@ -195,6 +189,7 @@ export default function Visit(props) {
   };
 
   const handleViewPage = (item) => {
+    console.log("itemgggg", item);
     navigate("/VisitorDetailView", { state: item });
   };
 
@@ -210,7 +205,8 @@ export default function Visit(props) {
         <td> {getAllVisits[i].mobile_number} </td>
         <td> {getAllVisits[i].visitor_type} </td>
         <td> {getAllVisits[i].Vidhansabha} </td>
-        <td> {moment().format("DD/MM/YY HH:MM a")} </td>
+        <td> {moment(getAllVisits[i].created_at).format(
+        "YYYY-MM-DD HH:mm:ss ")} </td>
         <td> {getAllVisits[i].UserAddedBy} </td>
         <td
           style={{
@@ -376,7 +372,6 @@ export default function Visit(props) {
                                       <div
                                         style={{
                                           display: "flex",
-                                          
                                         }}
                                       >
                                         <button
@@ -435,7 +430,6 @@ export default function Visit(props) {
                                                     type="file"
                                                     id="contained-button-filepic"
                                                     className="form-control"
-                                                   
                                                   />
                                                 </div>
 
@@ -450,7 +444,6 @@ export default function Visit(props) {
                                                     data-bs-dismiss="modal"
                                                     aria-label="Close"
                                                     class="btn btn-primary btn-sm"
-                                                   
                                                   >
                                                     Import
                                                   </button>
@@ -471,8 +464,6 @@ export default function Visit(props) {
                                           </div>
                                           {/* /.modal-dialog */}
                                         </div>
-
-                                       
                                       </div>
                                     </div>
                                   </div>

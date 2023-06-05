@@ -54,8 +54,10 @@ export default function User(props) {
             .includes(e.target.value.toLowerCase())) ||
         (item.lastname &&
           item.lastname.toLowerCase().includes(e.target.value.toLowerCase())) ||
-          (item.mobile_number &&
-            item.mobile_number.toLowerCase().includes(e.target.value.toLowerCase())) ||
+        (item.mobile_number &&
+          item.mobile_number
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())) ||
         (id && id.includes(e.target.value))
       ) {
         searchArr.push(item);

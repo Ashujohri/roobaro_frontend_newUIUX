@@ -12,6 +12,7 @@ import moment from "moment";
 export default function Minister(props) {
   const navigate = useNavigate();
   var UserData = JSON.parse(localStorage.getItem("userData"));
+  console.log("sachin", UserData);
   const [getAllMinisters, setAllMinisters] = useState([]);
   const [getAllUsersExcelDownload, setAllUsersExcelDownload] = useState([]);
   const [entryStart, setEntryStart] = useState(0);
@@ -28,7 +29,7 @@ export default function Minister(props) {
   const fetchAllUser = async () => {
     try {
       var res = await getDataAxios(`minister/displayAllMinister`);
-      
+
       if (res.status == true) {
         setAllMinisters(res.result);
         setMinisterTableData(res.result);
@@ -45,7 +46,8 @@ export default function Minister(props) {
   };
 
   const handleViewPage = (item) => {
-    navigate("/UserDetailView", { state: { item } });
+    console.log("itemdddddddd", item);
+    navigate("/MinisterDetailView", { state: { item } });
   };
 
   const getEmployee = () => {
@@ -77,9 +79,7 @@ export default function Minister(props) {
       ministerName = getAllMinisters[i].MinisterName;
       mobileNumber = getAllMinisters[i].mobile_number;
       Email = getAllMinisters[i].email;
-      createdDate = moment(getAllMinisters[i].created_at).format(
-        "DD/MM/YYYY HH:mm:ss a"
-      );
+      createdDate = moment(getAllMinisters[i].created_at).format("DD/MM/YYYY ");
       Status = getAllMinisters[i].status;
     } catch (error) {
       Id = "";
@@ -98,7 +98,6 @@ export default function Minister(props) {
         <td> {Email} </td>
         <td> {createdDate} </td>
         <td> {Status} </td>
-        
         <td>
           <button
             type="button"
@@ -108,14 +107,9 @@ export default function Minister(props) {
               justifyContent: "center",
               alignItems: "center",
             }}
-            onClick={() => {
-              handleViewPage(getAllMinisters[i]);
-            }}
+            onClick={() => handleViewPage(getAllMinisters[i])}
           >
-            <i
-              className="fe-eye"
-              style={{ backgroundColor: "#22a6b3", color: "white" }}
-            />
+            <i className="fe-eye" style={{ color: "white" }} />
           </button>
         </td>
       </tr>
@@ -182,11 +176,15 @@ export default function Minister(props) {
       var id = `${item.id}`;
       if (
         (item.firstname &&
-          item.firstname.toLowerCase().includes(e.target.value.toLowerCase())) ||
+          item.firstname
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())) ||
         (item.lastname &&
           item.lastname.toLowerCase().includes(e.target.value.toLowerCase())) ||
-          (item.mobile_number &&
-            item.mobile_number.toLowerCase().includes(e.target.value.toLowerCase())) ||
+        (item.mobile_number &&
+          item.mobile_number
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())) ||
         (id && id.includes(e.target.value))
       ) {
         searchArr.push(item);
@@ -421,9 +419,7 @@ export default function Minister(props) {
                                         className="dropdown-toggle arrow-none card-drop"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false"
-                                      >
-                                        
-                                      </a>
+                                      ></a>
                                       <div
                                         className="dropdown-menu dropdown-menu-end"
                                         style={{ cursor: "pointer" }}
@@ -535,7 +531,7 @@ export default function Minister(props) {
                                     <div style={{ color: "black" }}>ID</div>
                                   </div>
                                 </th>
-            
+
                                 <th
                                   style={{
                                     cursor: "pointer",
@@ -632,9 +628,7 @@ export default function Minister(props) {
                                       alignItems: "center",
                                     }}
                                   >
-                                    <div style={{ color: "black" }}>
-                                     status
-                                    </div>
+                                    <div style={{ color: "black" }}>status</div>
                                   </div>
                                 </th>
 
